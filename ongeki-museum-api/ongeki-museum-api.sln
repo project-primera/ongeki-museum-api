@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ongeki-museum-api", "ongeki-museum-api\ongeki-museum-api.csproj", "{FF40A99F-B536-46EB-8935-3E83A205B672}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ongeki-museum-api.AppHost", "ongeki-museum-api.AppHost\ongeki-museum-api.AppHost.csproj", "{325C0D82-BFEA-45A3-A21B-DE3D2FAB74CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ongeki-museum-api.ServiceDefaults", "ongeki-museum-api.ServiceDefaults\ongeki-museum-api.ServiceDefaults.csproj", "{73F898F4-E9CC-49E2-B1D1-0F93F1879071}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF40A99F-B536-46EB-8935-3E83A205B672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF40A99F-B536-46EB-8935-3E83A205B672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF40A99F-B536-46EB-8935-3E83A205B672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF40A99F-B536-46EB-8935-3E83A205B672}.Release|Any CPU.Build.0 = Release|Any CPU
+		{325C0D82-BFEA-45A3-A21B-DE3D2FAB74CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{325C0D82-BFEA-45A3-A21B-DE3D2FAB74CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{325C0D82-BFEA-45A3-A21B-DE3D2FAB74CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{325C0D82-BFEA-45A3-A21B-DE3D2FAB74CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73F898F4-E9CC-49E2-B1D1-0F93F1879071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73F898F4-E9CC-49E2-B1D1-0F93F1879071}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73F898F4-E9CC-49E2-B1D1-0F93F1879071}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73F898F4-E9CC-49E2-B1D1-0F93F1879071}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
