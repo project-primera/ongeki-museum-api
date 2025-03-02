@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace ongeki_museum_api.Controllers;
+namespace OngekiMuseumApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]

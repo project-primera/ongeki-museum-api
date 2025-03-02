@@ -4,8 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>ongeki_museum_api</RootNamespace>
-    <UserSecretsId>2b796183-ac39-46cb-98a5-af67c9e7755d</UserSecretsId>
+    <UserSecretsId>7cf8566a-b603-4c6e-a5c0-bd8045216c5c</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
@@ -15,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ongeki-museum-api.ServiceDefaults\ongeki-museum-api.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\OngekiMuseumApi.ServiceDefaults\OngekiMuseumApi.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

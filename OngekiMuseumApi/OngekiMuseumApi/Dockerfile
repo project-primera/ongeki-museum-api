@@ -12,19 +12,19 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ongeki-museum-api/ongeki-museum-api.csproj", "ongeki-museum-api/"]
-RUN dotnet restore "./ongeki-museum-api/ongeki-museum-api.csproj"
+COPY ["OngekiMuseumApi/OngekiMuseumApi.csproj", "OngekiMuseumApi/"]
+RUN dotnet restore "./OngekiMuseumApi/OngekiMuseumApi.csproj"
 COPY . .
-WORKDIR "/src/ongeki-museum-api"
-RUN dotnet build "./ongeki-museum-api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/OngekiMuseumApi"
+RUN dotnet build "./OngekiMuseumApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # このステージは、最終ステージにコピーするサービス プロジェクトを公開するために使用されます
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ongeki-museum-api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./OngekiMuseumApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # このステージは、運用環境または VS から通常モードで実行している場合に使用されます (デバッグ構成を使用しない場合の既定)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ongeki-museum-api.dll"]
+ENTRYPOINT ["dotnet", "OngekiMuseumApi.dll"]

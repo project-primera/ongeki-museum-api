@@ -2,10 +2,10 @@
 /shelf/
 /workspace.xml
 # Rider の無視対象ファイル
+/projectSettingsUpdater.xml
 /contentModel.xml
 /modules.xml
-/projectSettingsUpdater.xml
-/.idea.ongeki-museum-api.iml
+/.idea.OngekiMuseumApi.iml
 # エディターベースの HTTP クライアントリクエスト
 /httpRequests/
 # Datasource local storage ignored files

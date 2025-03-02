@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAspireHost>true</IsAspireHost>
-    <UserSecretsId>65aca2db-1150-4044-a57a-44293b0430b5</UserSecretsId>
+    <UserSecretsId>3c8deea5-e0b7-450b-86c6-4d242a013169</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ongeki-museum-api\ongeki-museum-api.csproj" />
+    <ProjectReference Include="..\OngekiMuseumApi\OngekiMuseumApi.csproj" />
   </ItemGroup>
 
 </Project>

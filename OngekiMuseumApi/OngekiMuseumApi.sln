@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi", "OngekiMuseumApi\OngekiMuseumApi.csproj", "{57A049A7-2F84-4604-93E9-EE9BE2D95DFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.AppHost", "OngekiMuseumApi.AppHost\OngekiMuseumApi.AppHost.csproj", "{DE8649E0-E532-45A0-9192-1251920B8AFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.ServiceDefaults", "OngekiMuseumApi.ServiceDefaults\OngekiMuseumApi.ServiceDefaults.csproj", "{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57A049A7-2F84-4604-93E9-EE9BE2D95DFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57A049A7-2F84-4604-93E9-EE9BE2D95DFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57A049A7-2F84-4604-93E9-EE9BE2D95DFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57A049A7-2F84-4604-93E9-EE9BE2D95DFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE8649E0-E532-45A0-9192-1251920B8AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE8649E0-E532-45A0-9192-1251920B8AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE8649E0-E532-45A0-9192-1251920B8AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE8649E0-E532-45A0-9192-1251920B8AFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

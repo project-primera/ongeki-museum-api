@@ -1,4 +1,4 @@
-namespace ongeki_museum_api;
+namespace OngekiMuseumApi;
 
 public class WeatherForecast
 {
