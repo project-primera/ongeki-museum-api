@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OngekiMuseumApi.Models;
 
 namespace OngekiMuseumApi.Data
 {
@@ -7,6 +8,11 @@ namespace OngekiMuseumApi.Data
     /// </summary>
     public class ApplicationDbContext : DbContext
     {
+        /// <summary>
+        /// ONGEKI公式楽曲データ
+        /// </summary>
+        public DbSet<OfficialMusic> OfficialMusics { get; set; } = null!;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
