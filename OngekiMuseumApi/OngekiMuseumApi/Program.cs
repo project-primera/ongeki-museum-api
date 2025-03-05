@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using OngekiMuseumApi.Data;
 
 namespace OngekiMuseumApi;
 
@@ -9,6 +11,15 @@ public class Program
         builder.AddServiceDefaults();
 
         // Add services to the container.
+
+        // Entity Framework Core の設定
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseMySql(
+                builder.Configuration.GetConnectionString("DefaultConnection"),
+                ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
+                mySqlOptions => mySqlOptions.EnableRetryOnFailure()
+            )
+        );
 
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -27,7 +38,6 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
-
 
         app.MapControllers();
 
