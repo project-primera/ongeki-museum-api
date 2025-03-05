@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.AppHost", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.ServiceDefaults", "OngekiMuseumApi.ServiceDefaults\OngekiMuseumApi.ServiceDefaults.csproj", "{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.Tests", "OngekiMuseumApi.Tests\OngekiMuseumApi.Tests.csproj", "{0137B868-77BB-4166-BB4B-10E08C576996}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0137B868-77BB-4166-BB4B-10E08C576996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0137B868-77BB-4166-BB4B-10E08C576996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0137B868-77BB-4166-BB4B-10E08C576996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0137B868-77BB-4166-BB4B-10E08C576996}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
