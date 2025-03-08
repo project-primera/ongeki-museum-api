@@ -81,56 +81,53 @@ namespace OngekiMuseumApi.Services
                     if (existingMusic != null)
                     {
                         // 既存データを更新
-                        existingMusic.New = musicJson.@new;
-                        existingMusic.Date = musicJson.date;
-                        existingMusic.Title = musicJson.title;
-                        existingMusic.TitleSort = musicJson.title_sort;
-                        existingMusic.Artist = musicJson.artist;
-                        existingMusic.ChapId = musicJson.chap_id;
-                        existingMusic.Chapter = musicJson.chapter;
-                        existingMusic.Character = musicJson.character;
-                        existingMusic.CharaId = musicJson.chara_id;
-                        existingMusic.Category = musicJson.category;
-                        existingMusic.CategoryId = musicJson.category_id;
-                        existingMusic.Lunatic = musicJson.lunatic;
-                        existingMusic.Bonus = musicJson.bonus;
-                        existingMusic.Copyright1 = musicJson.copyright1;
-                        existingMusic.LevBas = musicJson.lev_bas;
-                        existingMusic.LevAdv = musicJson.lev_adv;
-                        existingMusic.LevExc = musicJson.lev_exc;
-                        existingMusic.LevMas = musicJson.lev_mas;
-                        existingMusic.LevLnt = musicJson.lev_lnt;
-                        existingMusic.ImageUrl = musicJson.image_url;
-                        existingMusic.UpdatedAt = now;
+                        existingMusic.New = NullIfEmpty(musicJson.@new);
+                        existingMusic.Date = NullIfEmpty(musicJson.date);
+                        existingMusic.Title = NullIfEmpty(musicJson.title);
+                        existingMusic.TitleSort = NullIfEmpty(musicJson.title_sort);
+                        existingMusic.Artist = NullIfEmpty(musicJson.artist);
+                        existingMusic.ChapId = NullIfEmpty(musicJson.chap_id);
+                        existingMusic.Chapter = NullIfEmpty(musicJson.chapter);
+                        existingMusic.Character = NullIfEmpty(musicJson.character);
+                        existingMusic.CharaId = NullIfEmpty(musicJson.chara_id);
+                        existingMusic.Category = NullIfEmpty(musicJson.category);
+                        existingMusic.CategoryId = NullIfEmpty(musicJson.category_id);
+                        existingMusic.Lunatic = NullIfEmpty(musicJson.lunatic);
+                        existingMusic.Bonus = NullIfEmpty(musicJson.bonus);
+                        existingMusic.Copyright1 = NullIfEmpty(musicJson.copyright1);
+                        existingMusic.LevBas = NullIfEmpty(musicJson.lev_bas);
+                        existingMusic.LevAdv = NullIfEmpty(musicJson.lev_adv);
+                        existingMusic.LevExc = NullIfEmpty(musicJson.lev_exc);
+                        existingMusic.LevMas = NullIfEmpty(musicJson.lev_mas);
+                        existingMusic.LevLnt = NullIfEmpty(musicJson.lev_lnt);
+                        existingMusic.ImageUrl = NullIfEmpty(musicJson.image_url);
                     }
                     else
                     {
                         // 新規データを追加
                         var newMusic = new OfficialMusic
                         {
-                            New = musicJson.@new,
-                            Date = musicJson.date,
-                            Title = musicJson.title,
-                            TitleSort = musicJson.title_sort,
-                            Artist = musicJson.artist,
-                            IdString = musicJson.id,
-                            ChapId = musicJson.chap_id,
-                            Chapter = musicJson.chapter,
-                            Character = musicJson.character,
-                            CharaId = musicJson.chara_id,
-                            Category = musicJson.category,
-                            CategoryId = musicJson.category_id,
-                            Lunatic = musicJson.lunatic,
-                            Bonus = musicJson.bonus,
-                            Copyright1 = musicJson.copyright1,
-                            LevBas = musicJson.lev_bas,
-                            LevAdv = musicJson.lev_adv,
-                            LevExc = musicJson.lev_exc,
-                            LevMas = musicJson.lev_mas,
-                            LevLnt = musicJson.lev_lnt,
-                            ImageUrl = musicJson.image_url,
-                            CreatedAt = now,
-                            UpdatedAt = now
+                            New = NullIfEmpty(musicJson.@new),
+                            Date = NullIfEmpty(musicJson.date),
+                            Title = NullIfEmpty(musicJson.title),
+                            TitleSort = NullIfEmpty(musicJson.title_sort),
+                            Artist = NullIfEmpty(musicJson.artist),
+                            IdString = NullIfEmpty(musicJson.id),
+                            ChapId = NullIfEmpty(musicJson.chap_id),
+                            Chapter = NullIfEmpty(musicJson.chapter),
+                            Character = NullIfEmpty(musicJson.character),
+                            CharaId = NullIfEmpty(musicJson.chara_id),
+                            Category = NullIfEmpty(musicJson.category),
+                            CategoryId = NullIfEmpty(musicJson.category_id),
+                            Lunatic = NullIfEmpty(musicJson.lunatic),
+                            Bonus = NullIfEmpty(musicJson.bonus),
+                            Copyright1 = NullIfEmpty(musicJson.copyright1),
+                            LevBas = NullIfEmpty(musicJson.lev_bas),
+                            LevAdv = NullIfEmpty(musicJson.lev_adv),
+                            LevExc = NullIfEmpty(musicJson.lev_exc),
+                            LevMas = NullIfEmpty(musicJson.lev_mas),
+                            LevLnt = NullIfEmpty(musicJson.lev_lnt),
+                            ImageUrl = NullIfEmpty(musicJson.image_url),
                         };
 
                         await _context.OfficialMusics.AddAsync(newMusic);
@@ -139,13 +136,23 @@ namespace OngekiMuseumApi.Services
                 }
 
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"{count}件の新規楽曲データを保存しました");
+                _logger.LogInformation(@"{count}件の新規楽曲データを保存しました");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "楽曲データの取得・保存中にエラーが発生しました");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 文字列が空の場合はnullを返し、それ以外は元の値を返す
+        /// </summary>
+        /// <param name="value">チェックする文字列</param>
+        /// <returns>空の場合はnull、それ以外は元の文字列</returns>
+        private static string? NullIfEmpty(string value)
+        {
+            return string.IsNullOrEmpty(value) ? null : value;
         }
     }
 

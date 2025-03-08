@@ -63,7 +63,5 @@ namespace OngekiMuseumApi.Data
                 ((ITimestamp)entity.Entity).UpdatedAt = now;
             }
         }
-
-
     }
 }
