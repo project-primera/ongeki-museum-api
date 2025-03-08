@@ -31,7 +31,14 @@ namespace OngekiMuseumApi.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ここにエンティティの構成を追加できます
+            // DB関連の設定
+            modelBuilder
+                .UseCollation("utf8mb4_bin")
+                .HasCharSet("utf8mb4");
+
+            // インデックスなどの設定
+            modelBuilder.Entity<OfficialMusic>()
+                .HasIndex((i => i.IdString));
         }
     }
 }
