@@ -6,22 +6,14 @@ namespace OngekiMuseumApi.Data
     /// <summary>
     /// アプリケーションのデータベースコンテキスト
     /// </summary>
-    public class ApplicationDbContext : DbContext
-    {
+    public class ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        TimeProvider timeProvider
+    ) : DbContext(options) {
         /// <summary>
-        /// ONGEKI公式楽曲データ
+        /// オンゲキ公式楽曲データ
         /// </summary>
-        public DbSet<OfficialMusic> OfficialMusics { get; set; } = null!;
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        /// <param name="options">DbContextオプション</param>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-            //
-        }
+        public DbSet<OfficialMusic> OfficialMusics => Set<OfficialMusic>();
 
         /// <summary>
         /// モデル構成時に呼び出されるメソッド
