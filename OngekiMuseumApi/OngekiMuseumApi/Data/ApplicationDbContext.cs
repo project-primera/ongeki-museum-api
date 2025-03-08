@@ -32,6 +32,9 @@ namespace OngekiMuseumApi.Data
                 .HasIndex((i => i.IdString));
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.UseSnakeCaseNamingConvention();
+
         /// <inheritdoc />
         public override int SaveChanges() {
             AddTimestamps();

@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OngekiMuseumApi.Models
+[Table("official_music")]
 public class OfficialMusic : ITimestamp
 {
     /// <summary>
     /// ONGEKI公式サイトから取得した楽曲データを表すモデルクラス
     /// </summary>
-    [Table("official-music")]
     {
         /// <summary>
         /// 主キー、自動採番
