@@ -40,5 +40,36 @@ namespace OngekiMuseumApi.Data
             modelBuilder.Entity<OfficialMusic>()
                 .HasIndex((i => i.IdString));
         }
+
+        /// <inheritdoc />
+        public override int SaveChanges() {
+            AddTimestamps();
+            return base.SaveChanges();
+        }
+
+        /// <inheritdoc />
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) {
+            AddTimestamps();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// エンティティにタイムスタンプを追加する
+        /// </summary>
+        private void AddTimestamps() {
+            var entities = ChangeTracker.Entries()
+                .Where(x => x is { Entity: ITimestamp, State: EntityState.Added or EntityState.Modified });
+
+            foreach (var entity in entities) {
+                var now = timeProvider.GetUtcNow();
+
+                if (entity.State == EntityState.Added) {
+                    ((ITimestamp)entity.Entity).CreatedAt = now;
+                }
+                ((ITimestamp)entity.Entity).UpdatedAt = now;
+            }
+        }
+
+
     }
 }

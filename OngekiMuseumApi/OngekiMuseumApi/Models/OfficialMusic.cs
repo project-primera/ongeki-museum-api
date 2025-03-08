@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OngekiMuseumApi.Models
+public class OfficialMusic : ITimestamp
 {
     /// <summary>
     /// ONGEKI公式サイトから取得した楽曲データを表すモデルクラス
     /// </summary>
     [Table("official-music")]
-    public class OfficialMusic
     {
         /// <summary>
         /// 主キー、自動採番
@@ -146,14 +146,9 @@ namespace OngekiMuseumApi.Models
         [MaxLength(32)]
         public string ImageUrl { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 作成日時
-        /// </summary>
-        public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    /// <inheritdoc />
+    public required DateTimeOffset CreatedAt { get; set; }
 
-        /// <summary>
-        /// 更新日時
-        /// </summary>
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    }
+    /// <inheritdoc />
+    public required DateTimeOffset UpdatedAt { get; set; }
 }
