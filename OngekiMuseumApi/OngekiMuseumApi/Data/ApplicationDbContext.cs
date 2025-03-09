@@ -16,6 +16,11 @@ namespace OngekiMuseumApi.Data
         public DbSet<OfficialMusic> OfficialMusics => Set<OfficialMusic>();
 
         /// <summary>
+        /// オンゲキチャプターデータ
+        /// </summary>
+        public DbSet<Chapter> Chapters => Set<Chapter>();
+
+        /// <summary>
         /// モデル構成時に呼び出されるメソッド
         /// </summary>
         /// <param name="modelBuilder">モデルビルダー</param>
