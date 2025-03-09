@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OngekiMuseumApi.BackgroundServices;
 using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Services;
 
@@ -10,8 +11,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.AddServiceDefaults();
-
-        // Add services to the container.
 
         // Entity Framework Core の設定
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
