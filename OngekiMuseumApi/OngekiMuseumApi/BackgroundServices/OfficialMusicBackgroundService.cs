@@ -32,6 +32,10 @@ namespace OngekiMuseumApi.BackgroundServices
         protected override bool IsFirstRun() => true;
 
         /// <inheritdoc />
+        protected override TimeSpan GetFirstDelayTime() => TimeSpan.FromMinutes(1);
+
+
+        /// <inheritdoc />
         protected override async Task TaskAsync()
         {
             // スコープを作成してサービスを取得
