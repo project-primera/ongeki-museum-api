@@ -13,25 +13,22 @@ namespace OngekiMuseumApi.Services
     /// <summary>
     /// ONGEKI公式楽曲データの取得と保存を行うサービス
     /// </summary>
-    public class OfficialMusicService : IOfficialMusicService
+    /// <remarks>
+    /// コンストラクタ
+    /// </remarks>
+    /// <param name="context">データベースコンテキスト</param>
+    /// <param name="httpClientFactory">HTTPクライアントファクトリ</param>
+    /// <param name="logger">ロガー</param>
+    public class OfficialMusicService(
+        ApplicationDbContext context,
+        IHttpClientFactory httpClientFactory,
+        ILogger<OfficialMusicService> logger
+        ) : IOfficialMusicService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<OfficialMusicService> _logger;
+        private readonly ApplicationDbContext _context = context;
+        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+        private readonly ILogger<OfficialMusicService> _logger = logger;
         private const string MusicJsonUrl = "https://ongeki.sega.jp/assets/json/music/music.json";
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        /// <param name="context">データベースコンテキスト</param>
-        /// <param name="httpClientFactory">HTTPクライアントファクトリ</param>
-        /// <param name="logger">ロガー</param>
-        public OfficialMusicService(ApplicationDbContext context, IHttpClientFactory httpClientFactory, ILogger<OfficialMusicService> logger)
-        {
-            _context = context;
-            _httpClientFactory = httpClientFactory;
-            _logger = logger;
-        }
 
         /// <summary>
         /// 公式サイトから楽曲データを取得し、データベースに保存する
