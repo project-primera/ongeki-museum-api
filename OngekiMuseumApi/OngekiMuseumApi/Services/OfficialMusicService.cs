@@ -63,7 +63,7 @@ namespace OngekiMuseumApi.Services
                     return;
                 }
 
-                _logger.LogInformation($"{musicList.Count}件の楽曲データを取得しました");
+                _logger.LogInformation("{Count}件の楽曲データを取得しました", musicList.Count);
 
                 // データベースに保存
                 var now = DateTime.UtcNow;
@@ -133,12 +133,12 @@ namespace OngekiMuseumApi.Services
                 }
 
                 await _context.SaveChangesAsync();
-                _logger.LogInformation(@"{count}件の新規楽曲データを保存しました");
+                _logger.LogInformation(@"{Count}件の新規楽曲データを保存しました", count);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "楽曲データの取得・保存中にエラーが発生しました");
-                throw;
+                throw new InvalidOperationException("Failed to fetch and save official music data", ex);
             }
         }
 
@@ -159,6 +159,7 @@ namespace OngekiMuseumApi.Services
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class OfficialMusicJson
     {
+#pragma warning disable IDE1006 // 命名スタイル
         // ReSharper disable once InconsistentNaming
         public string @new { get; set; } = string.Empty;
 
@@ -221,5 +222,6 @@ namespace OngekiMuseumApi.Services
 
         // ReSharper disable once InconsistentNaming
         public string image_url { get; set; } = string.Empty;
+#pragma warning restore IDE1006 // 命名スタイル
     }
 }
