@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.BackgroundServices;
 using OngekiMuseumApi.Data;
+using OngekiMuseumApi.Facade;
 using OngekiMuseumApi.Services;
 
 namespace OngekiMuseumApi;
@@ -25,9 +26,15 @@ public class Program
 
         // 楽曲データサービスの登録
         builder.Services.AddScoped<IOfficialMusicService, OfficialMusicService>();
+        builder.Services.AddScoped<IChapterService, ChapterService>();
+
+        // 正規化ファサードの登録
+        builder.Services.AddScoped<IChapterNormalizationFacade, ChapterNormalizationFacade>();
+        builder.Services.AddScoped<INormalizationFacade>(sp => sp.GetRequiredService<IChapterNormalizationFacade>());
 
         // バックグラウンドサービスの登録
         builder.Services.AddHostedService<OfficialMusicBackgroundService>();
+        builder.Services.AddHostedService<NormalizationBackgroundService>();
 
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
