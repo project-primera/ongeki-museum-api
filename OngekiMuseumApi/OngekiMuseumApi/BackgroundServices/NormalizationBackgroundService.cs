@@ -1,4 +1,4 @@
-using OngekiMuseumApi.Facade;
+using OngekiMuseumApi.Facades.Normalization;
 
 namespace OngekiMuseumApi.BackgroundServices
 {

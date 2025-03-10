@@ -1,4 +1,4 @@
-namespace OngekiMuseumApi.Facade;
+namespace OngekiMuseumApi.Facades.Normalization;
 
 /// <summary>
 /// 正規化サービスのファサードインターフェース

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.BackgroundServices;
 using OngekiMuseumApi.Data;
-using OngekiMuseumApi.Facade;
+using OngekiMuseumApi.Facades.Normalization;
 using OngekiMuseumApi.Services;
 
 namespace OngekiMuseumApi;
