@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.BackgroundServices;
 using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Facades.Normalization;
+using OngekiMuseumApi.Helpers;
 using OngekiMuseumApi.Services;
 
 namespace OngekiMuseumApi;
@@ -24,7 +25,9 @@ public class Program
         // HTTPクライアントファクトリの追加
         builder.Services.AddHttpClient();
 
-        // 楽曲データサービスの登録
+        // サービスの登録
+        builder.Services.AddSingleton<ISlackLoggerService, SlackLoggerService>();
+
         builder.Services.AddScoped<IOfficialMusicService, OfficialMusicService>();
         builder.Services.AddScoped<IChapterService, ChapterService>();
 
@@ -41,6 +44,9 @@ public class Program
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
+
+        // ServiceProviderHelperにIServiceProviderを設定
+        ServiceProviderStaticHelper.SetServiceProvider(app.Services);
 
         app.MapDefaultEndpoints();
 
