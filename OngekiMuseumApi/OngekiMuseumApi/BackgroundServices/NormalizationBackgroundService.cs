@@ -1,3 +1,4 @@
+using OngekiMuseumApi.Extensions;
 using OngekiMuseumApi.Facades.Normalization;
 
 namespace OngekiMuseumApi.BackgroundServices
@@ -50,7 +51,7 @@ namespace OngekiMuseumApi.BackgroundServices
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"正規化処理中にエラーが発生しました");
+                    _logger.LogErrorWithSlack(ex, $"正規化処理中にエラーが発生しました");
                 }
             }
         }

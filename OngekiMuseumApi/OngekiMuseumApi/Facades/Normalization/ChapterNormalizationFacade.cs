@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.Data;
+using OngekiMuseumApi.Extensions;
 using OngekiMuseumApi.Models;
 
 namespace OngekiMuseumApi.Facades.Normalization;
@@ -28,7 +29,7 @@ public class ChapterNormalizationFacade : IChapterNormalizationFacade
     {
         try
         {
-            _logger.LogInformation("チャプター情報の正規化を開始します");
+            _logger.LogInformationWithSlack("チャプター情報の正規化を開始します");
 
             // OfficialMusicテーブルから一意のChapIdとChapter名を抽出
             var chapters = await _context.OfficialMusics
@@ -39,11 +40,11 @@ public class ChapterNormalizationFacade : IChapterNormalizationFacade
 
             if (chapters.Count == 0)
             {
-                _logger.LogWarning("抽出可能なチャプター情報がありません");
+                _logger.LogWarningWithSlack("抽出可能なチャプター情報がありません");
                 return 0;
             }
 
-            _logger.LogInformation($"{chapters.Count}件のチャプター情報を抽出しました");
+            _logger.LogInformationWithSlack($"{chapters.Count}件のチャプター情報を抽出しました");
 
             int addedCount = 0;
 
@@ -58,7 +59,7 @@ public class ChapterNormalizationFacade : IChapterNormalizationFacade
                 // ChapIdをintに変換
                 if (!int.TryParse(chapterInfo.ChapId, out var chapId))
                 {
-                    _logger.LogWarning($"ChapId '{chapterInfo.ChapId}' をint型に変換できませんでした");
+                    _logger.LogWarningWithSlack($"ChapId '{chapterInfo.ChapId}' をint型に変換できませんでした");
                     continue;
                 }
 
@@ -90,13 +91,13 @@ public class ChapterNormalizationFacade : IChapterNormalizationFacade
             }
 
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"{addedCount}件の新規チャプターデータを保存しました");
+            _logger.LogInformationWithSlack($"{addedCount}件の新規チャプターデータを保存しました");
 
             return addedCount;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "チャプター情報の正規化・保存中にエラーが発生しました");
+            _logger.LogErrorWithSlack(ex, "チャプター情報の正規化・保存中にエラーが発生しました");
             throw;
         }
     }

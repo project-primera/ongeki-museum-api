@@ -1,3 +1,5 @@
+using OngekiMuseumApi.Extensions;
+
 namespace OngekiMuseumApi.BackgroundServices
 {
     /// <summary>
@@ -23,13 +25,13 @@ namespace OngekiMuseumApi.BackgroundServices
         /// <returns>非同期タスク</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation($"[定期実行タスク] {GetServiceName()}が開始されました");
+            _logger.LogInformationWithSlack($"[定期実行タスク] {GetServiceName()}が開始されました");
 
             // 初回実行（オプション）
             if (IsFirstRun())
             {
-                _logger.LogInformation($"[定期実行タスク] {GetServiceName()}を初回実行します");
                 await Task.Delay(GetFirstDelayTime(), stoppingToken);
+                _logger.LogInformationWithSlack($"[定期実行タスク] {GetServiceName()}を初回実行します");
                 await ExecuteScheduledTaskAsync();
             }
 
@@ -44,7 +46,7 @@ namespace OngekiMuseumApi.BackgroundServices
                     // 次回実行時間を絶対時間で取得
                     var nextExecutionTime = DateTimeOffset.Now.Add(delay);
 
-                    _logger.LogInformation(
+                    _logger.LogInformationWithSlack(
                         $"[定期実行タスク] 次回の{GetServiceName()} は {nextExecutionTime:yyyy/MM/dd HH:mm:ss} に実行されます ({delay:dd\\.hh\\:mm\\:ss}後)",
                         nextExecutionTime, delay
                     );
@@ -65,14 +67,14 @@ namespace OngekiMuseumApi.BackgroundServices
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"[定期実行タスク] {GetServiceName()}でエラーが発生しました");
+                    _logger.LogErrorWithSlack(ex, $"[定期実行タスク] {GetServiceName()}でエラーが発生しました");
 
                     // エラー発生時の待機時間
                     await Task.Delay(GetErrorRetryDelayTime(), stoppingToken);
                 }
             }
 
-            _logger.LogInformation($"[定期実行タスク] {GetServiceName()}が停止しました");
+            _logger.LogInformationWithSlack($"[定期実行タスク] {GetServiceName()}が停止しました");
         }
 
         /// <summary>
@@ -104,7 +106,7 @@ namespace OngekiMuseumApi.BackgroundServices
         /// <returns>非同期タスク</returns>
         private async Task ExecuteScheduledTaskAsync()
         {
-            _logger.LogInformation("[定期実行タスク] {ServiceName} を実行します", GetServiceName());
+            _logger.LogInformationWithSlack($"[定期実行タスク] {GetServiceName()} を実行します");
 
             try
             {
@@ -112,10 +114,10 @@ namespace OngekiMuseumApi.BackgroundServices
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[定期実行タスク] {ServiceName} でエラーが発生しました", GetServiceName());
+                _logger.LogErrorWithSlack(ex, $"[定期実行タスク] {GetServiceName()} でエラーが発生しました");
             }
 
-            _logger.LogInformation("[定期実行タスク] {ServiceName} が完了しました", GetServiceName());
+            _logger.LogInformationWithSlack($"[定期実行タスク] {GetServiceName()} が完了しました");
         }
 
         /// <summary>

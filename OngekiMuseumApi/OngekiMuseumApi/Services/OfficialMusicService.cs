@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OngekiMuseumApi.Data;
+using OngekiMuseumApi.Extensions;
 using OngekiMuseumApi.Models;
 
 namespace OngekiMuseumApi.Services
@@ -38,7 +39,7 @@ namespace OngekiMuseumApi.Services
         {
             try
             {
-                _logger.LogInformation("公式楽曲データの取得を開始します");
+                _logger.LogInformationWithSlack("公式楽曲データの取得を開始します");
 
                 // HTTPクライアントを作成
                 var client = _httpClientFactory.CreateClient();
@@ -59,11 +60,11 @@ namespace OngekiMuseumApi.Services
 
                 if (musicList == null || musicList.Count == 0)
                 {
-                    _logger.LogWarning("取得した楽曲データが空です");
+                    _logger.LogWarningWithSlack("取得した楽曲データが空です");
                     return;
                 }
 
-                _logger.LogInformation("{Count}件の楽曲データを取得しました", musicList.Count);
+                _logger.LogInformationWithSlack($"{musicList.Count}件の楽曲データを取得しました");
 
                 // データベースに保存
                 var now = DateTime.UtcNow;
@@ -133,11 +134,11 @@ namespace OngekiMuseumApi.Services
                 }
 
                 await _context.SaveChangesAsync();
-                _logger.LogInformation(@"{Count}件の新規楽曲データを保存しました", count);
+                _logger.LogInformationWithSlack($"{count}件の新規楽曲データを保存しました");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "楽曲データの取得・保存中にエラーが発生しました");
+                _logger.LogErrorWithSlack(ex, "楽曲データの取得・保存中にエラーが発生しました");
                 throw new InvalidOperationException("Failed to fetch and save official music data", ex);
             }
         }
