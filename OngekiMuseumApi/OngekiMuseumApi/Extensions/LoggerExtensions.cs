@@ -15,7 +15,7 @@ public static class LoggerExtensions
     /// <param name="logger">ロガー</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogTraceWithSlack(this ILogger logger, string message, params object[] args)
+    public static void LogTraceWithSlack(this ILogger logger, string message, params object?[] args)
     {
         logger.LogTrace(message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();
@@ -28,7 +28,7 @@ public static class LoggerExtensions
     /// <param name="logger">ロガー</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogDebugWithSlack(this ILogger logger, string message, params object[] args)
+    public static void LogDebugWithSlack(this ILogger logger, string message, params object?[] args)
     {
         logger.LogDebug(message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();
@@ -41,7 +41,7 @@ public static class LoggerExtensions
     /// <param name="logger">ロガー</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogInformationWithSlack(this ILogger logger, string message, params object[] args)
+    public static void LogInformationWithSlack(this ILogger logger, string message, params object?[] args)
     {
         logger.LogInformation(message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();
@@ -54,7 +54,7 @@ public static class LoggerExtensions
     /// <param name="logger">ロガー</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogWarningWithSlack(this ILogger logger, string message, params object[] args)
+    public static void LogWarningWithSlack(this ILogger logger, string message, params object?[] args)
     {
         logger.LogWarning(message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();
@@ -67,7 +67,7 @@ public static class LoggerExtensions
     /// <param name="logger">ロガー</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogErrorWithSlack(this ILogger logger, string message, params object[] args)
+    public static void LogErrorWithSlack(this ILogger logger, string message, params object?[] args)
     {
         logger.LogError(message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();
@@ -81,7 +81,7 @@ public static class LoggerExtensions
     /// <param name="exception">例外</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogErrorWithSlack(this ILogger logger, Exception exception, string message, params object[] args)
+    public static void LogErrorWithSlack(this ILogger logger, Exception exception, string message, params object?[] args)
     {
         logger.LogError(exception, message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();
@@ -94,7 +94,7 @@ public static class LoggerExtensions
     /// <param name="logger">ロガー</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogCriticalWithSlack(this ILogger logger, string message, params object[] args)
+    public static void LogCriticalWithSlack(this ILogger logger, string message, params object?[] args)
     {
         logger.LogCritical(message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();
@@ -108,7 +108,7 @@ public static class LoggerExtensions
     /// <param name="exception">例外</param>
     /// <param name="message">メッセージ</param>
     /// <param name="args">メッセージのフォーマット引数</param>
-    public static void LogCriticalWithSlack(this ILogger logger, Exception exception, string message, params object[] args)
+    public static void LogCriticalWithSlack(this ILogger logger, Exception exception, string message, params object?[] args)
     {
         logger.LogCritical(exception, message, args);
         var slackLoggerService = ServiceProviderStaticHelper.GetService<ISlackLoggerService>();

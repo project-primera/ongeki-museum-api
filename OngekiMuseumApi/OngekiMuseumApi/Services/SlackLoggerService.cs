@@ -23,7 +23,7 @@ public class SlackLoggerService(
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
     /// <inheritdoc />
-    public void SendLogToSlack(LogLevel logLevel, string message, params object[] args)
+    public void SendLogToSlack(LogLevel logLevel, string message, params object?[] args)
     {
         var formattedMessage = string.Format(message, args);
         var webhookUrl = GetWebhookUrlForLogLevel(logLevel);
@@ -37,7 +37,7 @@ public class SlackLoggerService(
     }
 
     /// <inheritdoc />
-    public void SendLogToSlack(LogLevel logLevel, Exception exception, string message, params object[] args)
+    public void SendLogToSlack(LogLevel logLevel, Exception exception, string message, params object?[] args)
     {
         var formattedMessage = string.Format(message, args);
         var webhookUrl = GetWebhookUrlForLogLevel(logLevel);
@@ -47,7 +47,7 @@ public class SlackLoggerService(
             return;
         }
 
-        var fullMessage = $"{formattedMessage}\n\nException: {exception.GetType().Name}\nMessage: {exception.Message}\nStackTrace: {exception.StackTrace}";
+        var fullMessage = $"{formattedMessage}\n\n```\nException: {exception.GetType().Name}\nMessage: {exception.Message}\nStackTrace: {exception.StackTrace}\n```";
         SendWebhook(fullMessage, webhookUrl);
     }
 
