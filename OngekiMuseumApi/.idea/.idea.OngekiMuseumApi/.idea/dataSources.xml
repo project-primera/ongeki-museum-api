@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="postgres@127.0.0.1" uuid="7bbdbea3-d86f-4dd3-ad10-19cb1616d027">
-      <driver-ref>postgresql</driver-ref>
+    <data-source source="LOCAL" name="ongeki-museum-api@127.0.0.1" uuid="6ba3a477-e86e-4d89-af09-ba8c3ffd060e">
+      <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://127.0.0.1:54320/postgres</jdbc-url>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://127.0.0.1:33006/ongeki-museum-api</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

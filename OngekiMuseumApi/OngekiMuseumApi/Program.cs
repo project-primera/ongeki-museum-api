@@ -16,9 +16,10 @@ public class Program
 
         // Entity Framework Core の設定
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(
+            options.UseMySql(
                 builder.Configuration.GetConnectionString("DefaultConnection"),
-                npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()
+                ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
+                mySqlOptions => mySqlOptions.EnableRetryOnFailure()
             )
         );
 

@@ -30,7 +30,8 @@ namespace OngekiMuseumApi.Data
 
             // DB関連の設定
             modelBuilder
-                .UseCollation("utf8mb4_bin");
+                .UseCollation("utf8mb4_bin")
+                .HasCharSet("utf8mb4");
 
             // インデックスなどの設定
             modelBuilder.Entity<OfficialMusic>()
