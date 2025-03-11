@@ -47,7 +47,7 @@ public class SlackLoggerService(
             return;
         }
 
-        var fullMessage = $"{formattedMessage}\n\n```\nException: {exception.GetType().Name}\nMessage: {exception.Message}\nStackTrace: {exception.StackTrace}\n```";
+        var fullMessage = $"{formattedMessage}\n```\nException: {exception.GetType().Name}\nMessage: {exception.Message}\nStackTrace\n{exception.StackTrace}\n```";
         SendWebhook(fullMessage, webhookUrl);
     }
 

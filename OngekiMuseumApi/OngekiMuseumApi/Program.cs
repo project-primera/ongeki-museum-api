@@ -3,6 +3,7 @@ using OngekiMuseumApi.BackgroundServices;
 using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Facades.Normalization;
 using OngekiMuseumApi.Helpers;
+using OngekiMuseumApi.Middlewares;
 using OngekiMuseumApi.Services;
 
 namespace OngekiMuseumApi;
@@ -56,6 +57,8 @@ public class Program
         {
             app.MapOpenApi();
         }
+
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
 
         app.UseHttpsRedirection();
 
