@@ -21,6 +21,11 @@ namespace OngekiMuseumApi.Data
         public DbSet<Chapter> Chapters => Set<Chapter>();
 
         /// <summary>
+        /// オンゲキカテゴリデータ
+        /// </summary>
+        public DbSet<Category> Categories => Set<Category>();
+
+        /// <summary>
         /// モデル構成時に呼び出されるメソッド
         /// </summary>
         /// <param name="modelBuilder">モデルビルダー</param>

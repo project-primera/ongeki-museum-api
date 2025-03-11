@@ -36,6 +36,8 @@ public class Program
         // 正規化ファサードの登録
         builder.Services.AddScoped<IChapterNormalizationFacade, ChapterNormalizationFacade>();
         builder.Services.AddScoped<INormalizationFacade>(sp => sp.GetRequiredService<IChapterNormalizationFacade>());
+        builder.Services.AddScoped<ICategoryNormalizationFacade, CategoryNormalizationFacade>();
+        builder.Services.AddScoped<INormalizationFacade>(sp => sp.GetRequiredService<ICategoryNormalizationFacade>());
 
         // バックグラウンドサービスの登録
         builder.Services.AddHostedService<OfficialMusicBackgroundService>();
