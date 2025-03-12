@@ -111,9 +111,132 @@ namespace OngekiMuseumApi.Services
                         }
                         else
                         {
-                            // 既存データを更新
-                            if (TryUpdateExistingMusic(existingMusic, musicJson))
+                            bool needsUpdate = false;
+
+                            // 各フィールドを比較して変更があるか確認
+                            if (!string.Equals(existingMusic.New, NullIfEmpty(musicJson.@new)))
                             {
+                                existingMusic.New = NullIfEmpty(musicJson.@new);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Date, NullIfEmpty(musicJson.date)))
+                            {
+                                existingMusic.Date = NullIfEmpty(musicJson.date);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Title, NullIfEmpty(musicJson.title)))
+                            {
+                                existingMusic.Title = NullIfEmpty(musicJson.title);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.TitleSort, NullIfEmpty(musicJson.title_sort)))
+                            {
+                                existingMusic.TitleSort = NullIfEmpty(musicJson.title_sort);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Artist, NullIfEmpty(musicJson.artist)))
+                            {
+                                existingMusic.Artist = NullIfEmpty(musicJson.artist);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.ChapId, NullIfEmpty(musicJson.chap_id)))
+                            {
+                                existingMusic.ChapId = NullIfEmpty(musicJson.chap_id);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Chapter, NullIfEmpty(musicJson.chapter)))
+                            {
+                                existingMusic.Chapter = NullIfEmpty(musicJson.chapter);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Character, NullIfEmpty(musicJson.character)))
+                            {
+                                existingMusic.Character = NullIfEmpty(musicJson.character);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.CharaId, NullIfEmpty(musicJson.chara_id)))
+                            {
+                                existingMusic.CharaId = NullIfEmpty(musicJson.chara_id);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Category, NullIfEmpty(musicJson.category)))
+                            {
+                                existingMusic.Category = NullIfEmpty(musicJson.category);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.CategoryId, NullIfEmpty(musicJson.category_id)))
+                            {
+                                existingMusic.CategoryId = NullIfEmpty(musicJson.category_id);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Lunatic, NullIfEmpty(musicJson.lunatic)))
+                            {
+                                existingMusic.Lunatic = NullIfEmpty(musicJson.lunatic);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Bonus, NullIfEmpty(musicJson.bonus)))
+                            {
+                                existingMusic.Bonus = NullIfEmpty(musicJson.bonus);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.Copyright1, NullIfEmpty(musicJson.copyright1)))
+                            {
+                                existingMusic.Copyright1 = NullIfEmpty(musicJson.copyright1);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.LevBas, NullIfEmpty(musicJson.lev_bas)))
+                            {
+                                existingMusic.LevBas = NullIfEmpty(musicJson.lev_bas);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.LevAdv, NullIfEmpty(musicJson.lev_adv)))
+                            {
+                                existingMusic.LevAdv = NullIfEmpty(musicJson.lev_adv);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.LevExc, NullIfEmpty(musicJson.lev_exc)))
+                            {
+                                existingMusic.LevExc = NullIfEmpty(musicJson.lev_exc);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.LevMas, NullIfEmpty(musicJson.lev_mas)))
+                            {
+                                existingMusic.LevMas = NullIfEmpty(musicJson.lev_mas);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.LevLnt, NullIfEmpty(musicJson.lev_lnt)))
+                            {
+                                existingMusic.LevLnt = NullIfEmpty(musicJson.lev_lnt);
+                                needsUpdate = true;
+                            }
+
+                            if (!string.Equals(existingMusic.ImageUrl, NullIfEmpty(musicJson.image_url)))
+                            {
+                                existingMusic.ImageUrl = NullIfEmpty(musicJson.image_url);
+                                needsUpdate = true;
+                            }
+
+                            if (needsUpdate)
+                            {
+                                _context.Update(existingSong);
                                 updateCount++;
                             }
                         }
@@ -128,140 +251,6 @@ namespace OngekiMuseumApi.Services
                 _logger.LogErrorWithSlack(ex, "楽曲データの取得・保存中にエラーが発生しました");
                 throw new InvalidOperationException("Failed to fetch and save official music data", ex);
             }
-        }
-
-        /// <summary>
-        /// 既存の楽曲データを更新する
-        /// </summary>
-        /// <param name="existingMusic">既存の楽曲データ</param>
-        /// <param name="musicJson">新しい楽曲データ</param>
-        /// <returns>更新が行われたかどうか</returns>
-        private bool TryUpdateExistingMusic(OfficialMusic existingMusic, OfficialMusicJson musicJson)
-        {
-            bool needsUpdate = false;
-
-            // 各フィールドを比較して変更があるか確認
-            if (!string.Equals(existingMusic.New, NullIfEmpty(musicJson.@new)))
-            {
-                existingMusic.New = NullIfEmpty(musicJson.@new);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Date, NullIfEmpty(musicJson.date)))
-            {
-                existingMusic.Date = NullIfEmpty(musicJson.date);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Title, NullIfEmpty(musicJson.title)))
-            {
-                existingMusic.Title = NullIfEmpty(musicJson.title);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.TitleSort, NullIfEmpty(musicJson.title_sort)))
-            {
-                existingMusic.TitleSort = NullIfEmpty(musicJson.title_sort);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Artist, NullIfEmpty(musicJson.artist)))
-            {
-                existingMusic.Artist = NullIfEmpty(musicJson.artist);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.ChapId, NullIfEmpty(musicJson.chap_id)))
-            {
-                existingMusic.ChapId = NullIfEmpty(musicJson.chap_id);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Chapter, NullIfEmpty(musicJson.chapter)))
-            {
-                existingMusic.Chapter = NullIfEmpty(musicJson.chapter);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Character, NullIfEmpty(musicJson.character)))
-            {
-                existingMusic.Character = NullIfEmpty(musicJson.character);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.CharaId, NullIfEmpty(musicJson.chara_id)))
-            {
-                existingMusic.CharaId = NullIfEmpty(musicJson.chara_id);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Category, NullIfEmpty(musicJson.category)))
-            {
-                existingMusic.Category = NullIfEmpty(musicJson.category);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.CategoryId, NullIfEmpty(musicJson.category_id)))
-            {
-                existingMusic.CategoryId = NullIfEmpty(musicJson.category_id);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Lunatic, NullIfEmpty(musicJson.lunatic)))
-            {
-                existingMusic.Lunatic = NullIfEmpty(musicJson.lunatic);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Bonus, NullIfEmpty(musicJson.bonus)))
-            {
-                existingMusic.Bonus = NullIfEmpty(musicJson.bonus);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.Copyright1, NullIfEmpty(musicJson.copyright1)))
-            {
-                existingMusic.Copyright1 = NullIfEmpty(musicJson.copyright1);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.LevBas, NullIfEmpty(musicJson.lev_bas)))
-            {
-                existingMusic.LevBas = NullIfEmpty(musicJson.lev_bas);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.LevAdv, NullIfEmpty(musicJson.lev_adv)))
-            {
-                existingMusic.LevAdv = NullIfEmpty(musicJson.lev_adv);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.LevExc, NullIfEmpty(musicJson.lev_exc)))
-            {
-                existingMusic.LevExc = NullIfEmpty(musicJson.lev_exc);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.LevMas, NullIfEmpty(musicJson.lev_mas)))
-            {
-                existingMusic.LevMas = NullIfEmpty(musicJson.lev_mas);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.LevLnt, NullIfEmpty(musicJson.lev_lnt)))
-            {
-                existingMusic.LevLnt = NullIfEmpty(musicJson.lev_lnt);
-                needsUpdate = true;
-            }
-
-            if (!string.Equals(existingMusic.ImageUrl, NullIfEmpty(musicJson.image_url)))
-            {
-                existingMusic.ImageUrl = NullIfEmpty(musicJson.image_url);
-                needsUpdate = true;
-            }
-
-            return needsUpdate;
         }
 
         /// <summary>
