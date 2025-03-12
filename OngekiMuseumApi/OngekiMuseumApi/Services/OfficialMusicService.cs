@@ -106,137 +106,121 @@ namespace OngekiMuseumApi.Services
                                 LevLnt = NullIfEmpty(musicJson.lev_lnt),
                                 ImageUrl = NullIfEmpty(musicJson.image_url),
                             };
+                            _logger.LogInformationWithSlack($"OfficialMusic 新規: {musicJson.title}");
                             await _context.OfficialMusics.AddAsync(newMusic);
                             newCount++;
                         }
                         else
                         {
-                            bool needsUpdate = false;
+                            string updateLog = "";
 
                             // 各フィールドを比較して変更があるか確認
                             if (!string.Equals(existingMusic.New, NullIfEmpty(musicJson.@new)))
                             {
+                                updateLog += $"\nNew: {existingMusic.New} → {musicJson.@new}";
                                 existingMusic.New = NullIfEmpty(musicJson.@new);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Date, NullIfEmpty(musicJson.date)))
                             {
+                                updateLog += $"\nDate: {existingMusic.Date} → {musicJson.date}";
                                 existingMusic.Date = NullIfEmpty(musicJson.date);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Title, NullIfEmpty(musicJson.title)))
                             {
+                                updateLog += $"\nTitle: {existingMusic.Title} → {musicJson.title}";
                                 existingMusic.Title = NullIfEmpty(musicJson.title);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.TitleSort, NullIfEmpty(musicJson.title_sort)))
                             {
+                                updateLog += $"\nTitleSort: {existingMusic.TitleSort} → {musicJson.title_sort}";
                                 existingMusic.TitleSort = NullIfEmpty(musicJson.title_sort);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Artist, NullIfEmpty(musicJson.artist)))
                             {
+                                updateLog += $"\nArtist: {existingMusic.Artist} → {musicJson.artist}";
                                 existingMusic.Artist = NullIfEmpty(musicJson.artist);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.ChapId, NullIfEmpty(musicJson.chap_id)))
                             {
+                                updateLog += $"\nChapId: {existingMusic.ChapId} → {musicJson.chap_id}";
                                 existingMusic.ChapId = NullIfEmpty(musicJson.chap_id);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Chapter, NullIfEmpty(musicJson.chapter)))
                             {
+                                updateLog += $"\nChapter: {existingMusic.Chapter} → {musicJson.chapter}";
                                 existingMusic.Chapter = NullIfEmpty(musicJson.chapter);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Character, NullIfEmpty(musicJson.character)))
                             {
+                                updateLog += $"\nCharacter: {existingMusic.Character} → {musicJson.character}";
                                 existingMusic.Character = NullIfEmpty(musicJson.character);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.CharaId, NullIfEmpty(musicJson.chara_id)))
                             {
+                                updateLog += $"\nCharaId: {existingMusic.CharaId} → {musicJson.chara_id}";
                                 existingMusic.CharaId = NullIfEmpty(musicJson.chara_id);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Category, NullIfEmpty(musicJson.category)))
                             {
+                                updateLog += $"\nCategory: {existingMusic.Category} → {musicJson.category}";
                                 existingMusic.Category = NullIfEmpty(musicJson.category);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.CategoryId, NullIfEmpty(musicJson.category_id)))
                             {
+                                updateLog += $"\nCategoryId: {existingMusic.CategoryId} → {musicJson.category_id}";
                                 existingMusic.CategoryId = NullIfEmpty(musicJson.category_id);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Lunatic, NullIfEmpty(musicJson.lunatic)))
                             {
+                                updateLog += $"\nLunatic: {existingMusic.Lunatic} → {musicJson.lunatic}";
                                 existingMusic.Lunatic = NullIfEmpty(musicJson.lunatic);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Bonus, NullIfEmpty(musicJson.bonus)))
                             {
+                                updateLog += $"\nBonus: {existingMusic.Bonus} → {musicJson.bonus}";
                                 existingMusic.Bonus = NullIfEmpty(musicJson.bonus);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.Copyright1, NullIfEmpty(musicJson.copyright1)))
                             {
+                                updateLog += $"\nCopyright1: {existingMusic.Copyright1} → {musicJson.copyright1}";
                                 existingMusic.Copyright1 = NullIfEmpty(musicJson.copyright1);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.LevBas, NullIfEmpty(musicJson.lev_bas)))
                             {
+                                updateLog += $"\nLevBas: {existingMusic.LevBas} → {musicJson.lev_bas}";
                                 existingMusic.LevBas = NullIfEmpty(musicJson.lev_bas);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.LevAdv, NullIfEmpty(musicJson.lev_adv)))
                             {
+                                updateLog += $"\nLevAdv: {existingMusic.LevAdv} → {musicJson.lev_adv}";
                                 existingMusic.LevAdv = NullIfEmpty(musicJson.lev_adv);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.LevExc, NullIfEmpty(musicJson.lev_exc)))
                             {
+                                updateLog += $"\nLevExc: {existingMusic.LevExc} → {musicJson.lev_exc}";
                                 existingMusic.LevExc = NullIfEmpty(musicJson.lev_exc);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.LevMas, NullIfEmpty(musicJson.lev_mas)))
                             {
+                                updateLog += $"\nLevMas: {existingMusic.LevMas} → {musicJson.lev_mas}";
                                 existingMusic.LevMas = NullIfEmpty(musicJson.lev_mas);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.LevLnt, NullIfEmpty(musicJson.lev_lnt)))
                             {
+                                updateLog += $"\nLevLnt: {existingMusic.LevLnt} → {musicJson.lev_lnt}";
                                 existingMusic.LevLnt = NullIfEmpty(musicJson.lev_lnt);
-                                needsUpdate = true;
                             }
-
                             if (!string.Equals(existingMusic.ImageUrl, NullIfEmpty(musicJson.image_url)))
                             {
+                                updateLog += $"\nImageUrl: {existingMusic.ImageUrl} → {musicJson.image_url}";
                                 existingMusic.ImageUrl = NullIfEmpty(musicJson.image_url);
-                                needsUpdate = true;
                             }
 
-                            if (needsUpdate)
+                            // 更新があった場合のみ保存
+                            if (updateLog != "")
                             {
-                                _context.Update(existingSong);
+                                _logger.LogInformationWithSlack($"OfficialMusic 更新: {musicJson.title}\n```\n{updateLog}\n```");
+                                _context.Update(existingMusic);
                                 updateCount++;
                             }
                         }
