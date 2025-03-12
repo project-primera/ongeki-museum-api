@@ -17,12 +17,6 @@ public class Song : ITimestamp
     public int Id { get; init; }
 
     /// <summary>
-    /// 楽曲のUUID（曲名とアーティストから生成したUUIDv7）
-    /// </summary>
-    [MaxLength(36)]
-    public string Uuid { get; set; } = string.Empty;
-
-    /// <summary>
     /// 曲名
     /// </summary>
     [MaxLength(128)]
@@ -35,9 +29,10 @@ public class Song : ITimestamp
     public string Artist { get; set; } = string.Empty;
 
     /// <summary>
-    /// ボーナス楽曲フラグ
+    /// 著作権情報
     /// </summary>
-    public bool IsBonusSong { get; set; }
+    [MaxLength(256)]
+    public string? Copyright { get; set; }
 
     /// <summary>
     /// 楽曲追加日時（JSTでその日の7時）

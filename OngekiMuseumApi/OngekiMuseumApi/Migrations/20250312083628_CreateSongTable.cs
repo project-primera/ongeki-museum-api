@@ -18,13 +18,12 @@ namespace OngekiMuseumApi.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    uuid = table.Column<string>(type: "varchar(36)", maxLength: 36, nullable: false, collation: "utf8mb4_bin")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     title = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false, collation: "utf8mb4_bin")
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     artist = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: false, collation: "utf8mb4_bin")
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    is_bonus_song = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    copyright = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true, collation: "utf8mb4_bin")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     added_at = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     updated_at = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false)

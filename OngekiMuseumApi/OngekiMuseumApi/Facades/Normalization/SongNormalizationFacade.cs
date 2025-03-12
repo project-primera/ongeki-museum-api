@@ -34,9 +34,13 @@ public class SongNormalizationFacade : ISongNormalizationFacade
             _logger.LogInformationWithSlack("楽曲情報の正規化を開始します");
 
             // OfficialMusicテーブルから楽曲情報を抽出（dateの値で古い順にソート）
+            // ルナティック楽曲とボーナス楽曲は除外
             var officialMusics = await _context.OfficialMusics
                 .Where(m => m.Title != null && m.Artist != null && m.IdString != null)
+                .Where(m => m.Lunatic != "1") // ルナティック楽曲を除外
+                .Where(m => m.Bonus != "1")   // ボーナス楽曲を除外
                 .OrderBy(m => m.Date) // 追加日の古い順に処理
+                .OrderBy(m => m.IdString) // 追加日の古い順に処理
                 .ToListAsync();
 
             if (officialMusics.Count == 0)
@@ -72,11 +76,8 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                 // 追加日時の設定
                 DateTimeOffset addedAt = GetAddedAtFromDateString(music.Date);
 
-                // UUIDv7の生成（Guid.CreateVersion7を使用）
-                var uuid = Guid.CreateVersion7();
-
-                // ボーナス楽曲フラグの設定
-                bool isBonusSong = music.Bonus == "1";
+                // 著作権情報の設定（"-"の場合はnull）
+                string? copyright = music.Copyright1 == "-" ? null : music.Copyright1;
 
                 if (existingSong != null)
                 {
@@ -95,9 +96,9 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                         isUpdated = true;
                     }
 
-                    if (existingSong.IsBonusSong != isBonusSong)
+                    if (existingSong.Copyright != copyright)
                     {
-                        existingSong.IsBonusSong = isBonusSong;
+                        existingSong.Copyright = copyright;
                         isUpdated = true;
                     }
 
@@ -120,8 +121,7 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                         Id = songId,
                         Title = music.Title,
                         Artist = music.Artist,
-                        IsBonusSong = isBonusSong,
-                        Uuid = uuid.ToString(),
+                        Copyright = copyright,
                         AddedAt = addedAt
                     };
 

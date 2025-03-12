@@ -12,7 +12,7 @@ using OngekiMuseumApi.Data;
 namespace OngekiMuseumApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250312065633_CreateSongTable")]
+    [Migration("20250312083628_CreateSongTable")]
     partial class CreateSongTable
     {
         /// <inheritdoc />
@@ -235,13 +235,14 @@ namespace OngekiMuseumApi.Migrations
                         .HasColumnType("varchar(256)")
                         .HasColumnName("artist");
 
+                    b.Property<string>("Copyright")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)")
+                        .HasColumnName("copyright");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created_at");
-
-                    b.Property<bool>("IsBonusSong")
-                        .HasColumnType("tinyint(1)")
-                        .HasColumnName("is_bonus_song");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -252,12 +253,6 @@ namespace OngekiMuseumApi.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("updated_at");
-
-                    b.Property<string>("Uuid")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("varchar(36)")
-                        .HasColumnName("uuid");
 
                     b.HasKey("Id")
                         .HasName("pk_song");
