@@ -26,9 +26,6 @@ namespace OngekiMuseumApi.Services
         ILogger<OfficialMusicService> logger
         ) : IOfficialMusicService
     {
-        private readonly ApplicationDbContext _context = context;
-        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-        private readonly ILogger<OfficialMusicService> _logger = logger;
         private static readonly List<string> MusicJsonUrls = [
             "https://ongeki.sega.jp/assets/json/music/music.json"
         ];
@@ -39,16 +36,16 @@ namespace OngekiMuseumApi.Services
         /// <returns>非同期タスク</returns>
         public async Task FetchAndSaveOfficialMusicAsync()
         {
-            try
+            logger.LogInformationWithSlack("公式楽曲データの取得を開始します");
+
+            foreach (var musicJsonUrl in MusicJsonUrls)
             {
-                _logger.LogInformationWithSlack("公式楽曲データの取得を開始します");
-
-                // HTTPクライアントを作成
-                var client = _httpClientFactory.CreateClient();
-
-                foreach (var musicJsonUrl in MusicJsonUrls)
+                try
                 {
+                    logger.LogInformationWithSlack($"{musicJsonUrl} の楽曲データを取得します");
+
                     // JSONデータを取得
+                    var client = httpClientFactory.CreateClient();
                     var response = await client.GetAsync(musicJsonUrl);
                     response.EnsureSuccessStatusCode();
 
@@ -64,11 +61,11 @@ namespace OngekiMuseumApi.Services
 
                     if (musicList == null || musicList.Count == 0)
                     {
-                        _logger.LogWarningWithSlack("取得した楽曲データが空です");
+                        logger.LogWarningWithSlack("取得した楽曲データが空です");
                         return;
                     }
 
-                    _logger.LogInformationWithSlack($"{musicList.Count}件の楽曲データを取得しました");
+                    logger.LogInformationWithSlack($"{musicList.Count}件の楽曲データを取得しました");
 
                     // データベースに保存
                     var newCount = 0;
@@ -77,7 +74,7 @@ namespace OngekiMuseumApi.Services
                     foreach (var musicJson in musicList)
                     {
                         // 既存のデータを検索（楽曲名、アーティスト名、チャプター名で一致するものを検索）
-                        var existingMusic = await _context.OfficialMusics
+                        var existingMusic = await context.OfficialMusics
                             .FirstOrDefaultAsync(m =>
                                 m.Title == NullIfEmpty(musicJson.title) &&
                                 m.Artist == NullIfEmpty(musicJson.artist) &&
@@ -112,8 +109,8 @@ namespace OngekiMuseumApi.Services
                                 LevLnt = NullIfEmpty(musicJson.lev_lnt),
                                 ImageUrl = NullIfEmpty(musicJson.image_url),
                             };
-                            _logger.LogInformationWithSlack($"OfficialMusic 新規: {musicJson.title}");
-                            await _context.OfficialMusics.AddAsync(newMusic);
+                            logger.LogInformationWithSlack($"OfficialMusic 新規: {musicJson.title}");
+                            await context.OfficialMusics.AddAsync(newMusic);
                             newCount++;
                         }
                         else
@@ -225,21 +222,23 @@ namespace OngekiMuseumApi.Services
                             // 更新があった場合のみ保存
                             if (updateLog != "")
                             {
-                                _logger.LogInformationWithSlack($"OfficialMusic 更新: {musicJson.title}\n```\n{updateLog}\n```");
-                                _context.Update(existingMusic);
+                                logger.LogInformationWithSlack($"OfficialMusic 更新: {existingMusic.Title} ({existingMusic.Id})\n```\n{updateLog}\n```");
+                                context.Update(existingMusic);
                                 updateCount++;
                             }
                         }
                     }
 
-                    await _context.SaveChangesAsync();
-                    _logger.LogInformationWithSlack($"{newCount}件の新規楽曲データを保存しました。{updateCount}件の既存楽曲データを更新しました。");
+                    await context.SaveChangesAsync();
+                    logger.LogInformationWithSlack($"{newCount}件の新規楽曲データを保存しました。\n{updateCount}件の既存楽曲データを更新しました。");
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogErrorWithSlack(ex, "楽曲データの取得・保存中にエラーが発生しました");
-                throw new InvalidOperationException("Failed to fetch and save official music data", ex);
+                catch (Exception ex)
+                {
+                    logger.LogErrorWithSlack(ex, $"楽曲データの取得・保存中にエラーが発生しました。 url: {musicJsonUrl}");
+                    throw new InvalidOperationException("Failed to fetch and save official music data", ex);
+                }
+                // ループごとにsleepする
+                await Task.Delay(5000);
             }
         }
 
