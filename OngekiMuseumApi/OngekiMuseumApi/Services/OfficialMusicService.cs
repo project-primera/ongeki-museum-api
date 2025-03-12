@@ -76,9 +76,15 @@ namespace OngekiMuseumApi.Services
 
                     foreach (var musicJson in musicList)
                     {
-                        // 既存のデータを検索
+                        // 既存のデータを検索（楽曲名、アーティスト名、チャプター名で一致するものを検索）
                         var existingMusic = await _context.OfficialMusics
-                            .FirstOrDefaultAsync(m => m.IdString == musicJson.id);
+                            .FirstOrDefaultAsync(m =>
+                                m.Title == NullIfEmpty(musicJson.title) &&
+                                m.Artist == NullIfEmpty(musicJson.artist) &&
+                                m.Chapter == NullIfEmpty(musicJson.chapter) &&
+                                m.Lunatic == NullIfEmpty(musicJson.lunatic) &&
+                                m.Bonus == NullIfEmpty(musicJson.bonus)
+                            );
 
                         if (existingMusic is null)
                         {
