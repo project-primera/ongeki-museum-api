@@ -90,7 +90,14 @@ public class SlackLoggerService(
         var client = _httpClientFactory.CreateClient();
         var content = new StringContent(JsonSerializer.Serialize(messageData), Encoding.UTF8, "application/json");
 
-        client.PostAsync(url, content).ConfigureAwait(false);
+        try
+        {
+            client.PostAsync(url, content).ConfigureAwait(false);
+        }
+        catch (Exception _)
+        {
+            // Webhookはエラーが発生しても処理を続行する
+        }
     }
 
     /// <summary>
