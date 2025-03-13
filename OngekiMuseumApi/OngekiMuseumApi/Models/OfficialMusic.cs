@@ -146,6 +146,12 @@ public class OfficialMusic : ITimestamp
     [MaxLength(32)]
     public string? ImageUrl { get; set; }
 
+    /// <summary>
+    /// 削除フラグ
+    /// 公式サイトから削除された楽曲の場合はtrue
+    /// </summary>
+    public bool IsDeleted { get; set; } = false;
+
     /// <inheritdoc />
     public DateTimeOffset CreatedAt { get; set; }
 
