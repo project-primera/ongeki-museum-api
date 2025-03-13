@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Extensions;
 using OngekiMuseumApi.Models;
@@ -73,12 +68,47 @@ namespace OngekiMuseumApi.Services
 
                     foreach (var musicJson in musicList)
                     {
-                        // 既存のデータを検索（楽曲名、アーティスト名、チャプター名で一致するものを検索）
-                        var existingMusic = await context.OfficialMusics
+                        // 表記揺れを吸収するため、特殊対応
+                        musicJson.title = TitleInconsistencies(musicJson.title);
+                        musicJson.artist = ArtistInconsistencies(musicJson.artist);
+
+                        // 何故か昔のLunaticはレベルだけ入ってlunaticに値が入ってないことがある
+                        if (!string.IsNullOrEmpty(musicJson.lev_lnt))
+                        {
+                            musicJson.lunatic = "1";
+                        }
+
+                        // copyright1 "-" の場合はnullにする
+                        if (musicJson.copyright1 == "-")
+                        {
+                            musicJson.copyright1 = null;
+                        }
+
+                        OfficialMusic? existingMusic = null;
+
+                        // 特殊対応 Lunaticが2つ以上ある曲
+                        if (musicJson is { title: "Perfect Shining!!", lunatic: "1" })
+                        {
+                            // 片方はレベルが0なのでそれで判定
+                            // 0でなければ多分remasterの方
+                            if (musicJson.lev_lnt == "0")
+                            {
+                                existingMusic = await context.OfficialMusics
+                                    .FirstOrDefaultAsync(m =>
+                                        m.Title == NullIfEmpty(musicJson.title) &&
+                                        m.Artist == NullIfEmpty(musicJson.artist) &&
+                                        m.Lunatic == NullIfEmpty(musicJson.lunatic) &&
+                                        m.Bonus == NullIfEmpty(musicJson.bonus) &&
+                                        m.LevExc == "0"
+                                    );
+                            }
+                        }
+
+                        // 特殊対応のない曲: 既存のデータを検索（一致するものを検索）
+                        existingMusic ??= await context.OfficialMusics
                             .FirstOrDefaultAsync(m =>
                                 m.Title == NullIfEmpty(musicJson.title) &&
                                 m.Artist == NullIfEmpty(musicJson.artist) &&
-                                m.Chapter == NullIfEmpty(musicJson.chapter) &&
                                 m.Lunatic == NullIfEmpty(musicJson.lunatic) &&
                                 m.Bonus == NullIfEmpty(musicJson.bonus)
                             );
@@ -222,7 +252,7 @@ namespace OngekiMuseumApi.Services
                             // 更新があった場合のみ保存
                             if (updateLog != "")
                             {
-                                logger.LogInformationWithSlack($"OfficialMusic 更新: {existingMusic.Title} ({existingMusic.Id})\n```\n{updateLog}\n```");
+                                logger.LogInformationWithSlack($"OfficialMusic 更新: {existingMusic.Title} ({existingMusic.Id})\n```{updateLog}\n```");
                                 context.Update(existingMusic);
                                 updateCount++;
                             }
@@ -243,11 +273,54 @@ namespace OngekiMuseumApi.Services
         }
 
         /// <summary>
+        /// タイトルの表記揺れに対応するための変換処理
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        private static string TitleInconsistencies(string title)
+        {
+            return title switch
+            {
+                _ => title
+            };
+        }
+
+        /// <summary>
+        /// アーティストの表記揺れに対応するための変換処理
+        ///
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        private static string ArtistInconsistencies(string title)
+        {
+            return title switch
+            {
+                "曲：宮崎誠／歌：星咲 あかり(CV:赤尾 ひかる)" => "曲：宮崎誠／歌：星咲 あかり(CV：赤尾 ひかる)",
+                "曲：上松範廉(Elements Garden)／歌：三角 葵(CV:春野 杏)" => "曲：上松範廉(Elements Garden)／歌：三角 葵(CV：春野 杏)",
+                "曲：ヒゲドライバー／歌：藤沢 柚子(CV:久保田 梨沙)" => "曲：ヒゲドライバー／歌：藤沢 柚子(CV：久保田 梨沙)",
+                "曲：TeddyLoid／歌：高瀬 梨緒(CV:久保 ユリカ)" => "曲：TeddyLoid／歌：高瀬 梨緒(CV：久保 ユリカ)",
+                "曲：Powerless／歌：柏木 咲姫(CV：石見 舞菜香)、柏木 美亜(CV:和氣 あず未)" => "曲：Powerless／歌：柏木 咲姫(CV：石見 舞菜香)、柏木 美亜(CV：和氣 あず未)",
+                "曲：やしきん／歌：柏木 美亜(CV:和氣 あず未)" => "曲：やしきん／歌：柏木 美亜(CV：和氣 あず未)",
+                "曲：DJ Genki／歌：東雲 つむぎ(CV:和泉 風花)" => "曲：DJ Genki／歌：東雲 つむぎ(CV：和泉 風花)",
+                "曲：本多友紀（Arte Refact）／歌：日向 千夏(CV:岡咲 美保)" => "曲：本多友紀（Arte Refact）／歌：日向 千夏(CV：岡咲 美保)",
+                "曲：中山真斗／歌：マーチングポケッツ [日向 千夏(CV:岡咲 美保)、柏木 美亜(CV:和氣 あず未)、東雲 つむぎ(CV:和泉 風花)]" => "曲：中山真斗／歌：マーチングポケッツ [日向 千夏(CV：岡咲 美保)、柏木 美亜(CV：和氣 あず未)、東雲 つむぎ(CV：和泉 風花)]",
+                "曲：篠崎あやと、橘亮祐／歌：マーチングポケッツ [日向 千夏(CV:岡咲 美保)、柏木 美亜(CV:和氣 あず未)、東雲 つむぎ(CV:和泉 風花)]" => "曲：篠崎あやと、橘亮祐／歌：マーチングポケッツ [日向 千夏(CV：岡咲 美保)、柏木 美亜(CV：和氣 あず未)、東雲 つむぎ(CV：和泉 風花)]",
+                "ノマ" => "NOMA",
+                "ビートまりお" => "ビートまりお（COOL&CREATE）",
+                "アイリス・ディセンバー・アンクライ(石上静香), パトリシア・オブ・エンド(高森奈津美)「ノラと皇女と野良猫ハート2」" => "パトリシア・オブ・エンド, ルーシア・オブ・エンド・サクラメント, ユウラシア・オブ・エンド「ノラと皇女と野良猫ハート2」",
+                "パトリシア・オブ・エンド・黒木未知・夕莉シャチ・明日原ユウキ「ノラと皇女と野良猫ハート」" => "パトリシア・オブ・エンド(CV:高森奈津美)・黒木未知(CV:仙台エリ)・夕莉シャチ(CV:浅川悠)・明日原ユウキ(CV:種﨑敦美)「ノラと皇女と野良猫ハート」",
+                "並木 学「怒首領蜂 大往生」" => "並木 学「怒首領蜂大往生」",
+                "" => "",
+                _ => title
+            };
+        }
+
+        /// <summary>
         /// 文字列が空の場合はnullを返し、それ以外は元の値を返す
         /// </summary>
         /// <param name="value">チェックする文字列</param>
         /// <returns>空の場合はnull、それ以外は元の文字列</returns>
-        private static string? NullIfEmpty(string value)
+        private static string? NullIfEmpty(string? value)
         {
             return string.IsNullOrEmpty(value) ? null : value;
         }
@@ -303,7 +376,7 @@ namespace OngekiMuseumApi.Services
         public string bonus { get; set; } = string.Empty;
 
         // ReSharper disable once InconsistentNaming
-        public string copyright1 { get; set; } = string.Empty;
+        public string? copyright1 { get; set; } = string.Empty;
 
         // ReSharper disable once InconsistentNaming
         public string lev_bas { get; set; } = string.Empty;
