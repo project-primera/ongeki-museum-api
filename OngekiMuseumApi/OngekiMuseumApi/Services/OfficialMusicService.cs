@@ -33,6 +33,27 @@ namespace OngekiMuseumApi.Services
         {
             logger.LogInformationWithSlack("公式楽曲データの取得を開始します");
 
+            // 全ての楽曲を削除済みとしてマークする
+            // 後で各JSONに含まれる楽曲は削除済みフラグをfalseに戻す
+            var allMusics = await context.OfficialMusics.ToListAsync();
+            var deletedCount = 0;
+
+            foreach (var music in allMusics)
+            {
+                if (!music.IsDeleted)
+                {
+                    music.IsDeleted = true;
+                    context.Update(music);
+                    deletedCount++;
+                }
+            }
+
+            if (deletedCount > 0)
+            {
+                await context.SaveChangesAsync();
+                logger.LogInformationWithSlack($"{deletedCount}件の楽曲を削除済みとしてマークしました");
+            }
+
             foreach (var musicJsonUrl in MusicJsonUrls)
             {
                 try
@@ -65,6 +86,7 @@ namespace OngekiMuseumApi.Services
                     // データベースに保存
                     var newCount = 0;
                     var updateCount = 0;
+                    var restoredCount = 0;
 
                     foreach (var musicJson in musicList)
                     {
@@ -252,15 +274,22 @@ namespace OngekiMuseumApi.Services
                             // 更新があった場合のみ保存
                             if (updateLog != "")
                             {
+                                existingMusic.IsDeleted = false;
                                 logger.LogInformationWithSlack($"OfficialMusic 更新: {existingMusic.Title} ({existingMusic.Id})\n```{updateLog}\n```");
                                 context.Update(existingMusic);
                                 updateCount++;
+                            }
+                            else if (existingMusic.IsDeleted)
+                            {
+                                // 削除フラグを復元する
+                                existingMusic.IsDeleted = false;
+                                restoredCount++;
                             }
                         }
                     }
 
                     await context.SaveChangesAsync();
-                    logger.LogInformationWithSlack($"{newCount}件の新規楽曲データを保存しました。\n{updateCount}件の既存楽曲データを更新しました。");
+                    logger.LogInformationWithSlack($"{newCount}件の新規楽曲データを保存しました。\n{updateCount}件の既存楽曲データを更新しました。\n{restoredCount}件の削除済み楽曲データを復元しました。");
                 }
                 catch (Exception ex)
                 {
