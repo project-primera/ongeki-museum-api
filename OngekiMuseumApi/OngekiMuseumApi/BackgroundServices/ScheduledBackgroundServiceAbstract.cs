@@ -5,7 +5,7 @@ namespace OngekiMuseumApi.BackgroundServices
     /// <summary>
     /// スケジュールされたバックグラウンドサービスの抽象基底クラス
     /// </summary>
-    public abstract class AbstractScheduledBackgroundService : BackgroundService
+    public abstract class ScheduledBackgroundServiceAbstract : BackgroundService
     {
         protected readonly ILogger _logger;
 
@@ -13,7 +13,7 @@ namespace OngekiMuseumApi.BackgroundServices
         /// コンストラクタ
         /// </summary>
         /// <param name="logger">ロガー</param>
-        protected AbstractScheduledBackgroundService(ILogger logger)
+        protected ScheduledBackgroundServiceAbstract(ILogger logger)
         {
             _logger = logger;
         }
@@ -98,9 +98,9 @@ namespace OngekiMuseumApi.BackgroundServices
         /// <returns>待機時間</returns>
         private TimeSpan CalculateNextExecutionTime()
         {
-#if DEBUG
-            return (TimeSpan.FromMinutes(5));
-#endif
+// #if DEBUG
+            // return (TimeSpan.FromMinutes(1));
+// #endif
 
             var (hour, minute, second) = GetExecutionTime();
 

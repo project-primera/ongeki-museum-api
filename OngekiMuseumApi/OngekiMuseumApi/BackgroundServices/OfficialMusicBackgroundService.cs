@@ -5,7 +5,7 @@ namespace OngekiMuseumApi.BackgroundServices
     /// <summary>
     /// ONGEKI公式楽曲データを定期的に取得するバックグラウンドサービス
     /// </summary>
-    public class OfficialMusicBackgroundService : AbstractScheduledBackgroundService, IOfficialMusicBackgroundService
+    public class OfficialMusicBackgroundService : ScheduledBackgroundServiceAbstract, IOfficialMusicBackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
 
