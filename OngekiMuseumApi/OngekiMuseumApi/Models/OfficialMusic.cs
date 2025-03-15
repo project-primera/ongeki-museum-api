@@ -17,6 +17,12 @@ public class OfficialMusic : ITimestamp
     public int Id { get; init; }
 
     /// <summary>
+    /// UUID
+    /// UUIDv7形式の一意識別子
+    /// </summary>
+    public Guid Uuid { get; set; }
+
+    /// <summary>
     /// 新曲フラグ
     /// NEW or 空文字列
     /// </summary>

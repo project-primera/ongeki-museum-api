@@ -83,6 +83,9 @@ namespace OngekiMuseumApi.Services
 
                     logger.LogInformationWithSlack($"{musicList.Count}件の楽曲データを取得しました");
 
+                    // dateの値でソート
+                    musicList = musicList.OrderBy(m => m.date).ToList();
+
                     // データベースに保存
                     var newCount = 0;
                     var updateCount = 0;
@@ -139,6 +142,7 @@ namespace OngekiMuseumApi.Services
                         {
                             // 新規データを追加
                             var newMusic = new OfficialMusic {
+                                Uuid = Guid.CreateVersion7(),
                                 New = NullIfEmpty(musicJson.@new),
                                 Date = NullIfEmpty(musicJson.date),
                                 Title = NullIfEmpty(musicJson.title),
