@@ -40,7 +40,11 @@ namespace OngekiMuseumApi.BackgroundServices
         {
             // スコープを作成して、ファサードを取得
             using var scope = _serviceScopeFactory.CreateScope();
-            var facades = scope.ServiceProvider.GetServices<INormalizationFacade>();
+            var facades = scope.ServiceProvider.GetServices<INormalizationFacade>()
+                .OrderBy(f => f.ExecutionOrder)
+                .ToList();
+
+            _logger.LogInformationWithSlack($"正規化処理を実行します。実行順序: {string.Join(" -> ", facades.Select(f => f.Name))}");
 
             // 各正規化ファサードを実行
             foreach (var facade in facades)
