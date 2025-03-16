@@ -31,7 +31,6 @@ public class Program
         builder.Services.AddSingleton<ISlackLoggerService, SlackLoggerService>();
 
         builder.Services.AddScoped<IOfficialMusicService, OfficialMusicService>();
-        builder.Services.AddScoped<IChapterService, ChapterService>();
 
         // 正規化ファサードの登録
         builder.Services.AddScoped<IChapterNormalizationFacade, ChapterNormalizationFacade>();

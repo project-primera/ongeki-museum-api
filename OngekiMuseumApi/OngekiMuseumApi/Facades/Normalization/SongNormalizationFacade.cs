@@ -83,16 +83,33 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                 // 著作権情報の設定（"-"の場合はnull）
                 string? copyright = officialMusic.Copyright1 == "-" ? null : officialMusic.Copyright1;
 
-                if (existingSong != null)
+                if (existingSong is null)
+                {
+                    // 新規データを追加
+                    var newSong = new Song
+                    {
+                        Id = songId,
+                        Uuid = Guid.CreateVersion7(),
+                        OfficialUuid = officialMusic.Uuid,
+                        Title = officialMusic.Title,
+                        Artist = officialMusic.Artist,
+                        Copyright = copyright,
+                        AddedAt = addedAt
+                    };
+
+                    await _context.AddAsync(newSong);
+                    addedCount++;
+                }
+                else
                 {
                     // 既存データを更新
                     bool isUpdated = false;
 
-                    // if (existingSong.OfficialId != officialMusic.Id)
-                    // {
-                    //     existingSong.Title = officialMusic.Title;
-                    //     isUpdated = true;
-                    // }
+                    if (existingSong.OfficialUuid != officialMusic.Uuid)
+                    {
+                        existingSong.OfficialUuid = officialMusic.Uuid;
+                        isUpdated = true;
+                    }
 
                     if (existingSong.Title != officialMusic.Title)
                     {
@@ -122,21 +139,6 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                     {
                         _context.Update(existingSong);
                     }
-                }
-                else
-                {
-                    // 新規データを追加
-                    var newSong = new Song
-                    {
-                        Id = songId,
-                        Title = officialMusic.Title,
-                        Artist = officialMusic.Artist,
-                        Copyright = copyright,
-                        AddedAt = addedAt
-                    };
-
-                    await _context.AddAsync(newSong);
-                    addedCount++;
                 }
             }
 

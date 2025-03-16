@@ -14,7 +14,20 @@ public class Song : ITimestamp
     /// 楽曲ID（主キー）
     /// </summary>
     [Key]
+    // [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
+
+    /// <summary>
+    /// UUID
+    /// UUIDv7形式の一意識別子
+    /// </summary>
+    public Guid Uuid { get; set; }
+
+    /// <summary>
+    /// 公式カテゴリID
+    /// 公式サイトで使用されているカテゴリID
+    /// </summary>
+    public Guid OfficialUuid { get; set; }
 
     /// <summary>
     /// 曲名
