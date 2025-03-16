@@ -306,7 +306,7 @@ namespace OngekiMuseumApi.Services
                     }
 
                     await context.SaveChangesAsync();
-                    logger.LogInformationWithSlack($"{newCount}件の新規楽曲データを保存しました。\n{updateCount}件の既存楽曲データを更新しました。\n{restoredCount}件の削除済み楽曲データを復元しました。");
+                    logger.LogInformationWithSlack($"{newCount}件の新規楽曲データを保存しました。\n{updateCount}件の既存楽曲データを更新しました。\n現行楽曲: {restoredCount}件");
                 }
                 catch (Exception ex)
                 {
