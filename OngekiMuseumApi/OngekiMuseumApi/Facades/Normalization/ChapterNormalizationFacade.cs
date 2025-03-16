@@ -13,6 +13,12 @@ public class ChapterNormalizationFacade : IChapterNormalizationFacade
     private readonly ApplicationDbContext _context;
     private readonly ILogger<ChapterNormalizationFacade> _logger;
 
+    /// <inheritdoc />
+    public int ExecutionOrder => 20;
+
+    /// <inheritdoc />
+    public string Name => "チャプター情報の正規化";
+
     /// <summary>
     /// コンストラクタ
     /// </summary>

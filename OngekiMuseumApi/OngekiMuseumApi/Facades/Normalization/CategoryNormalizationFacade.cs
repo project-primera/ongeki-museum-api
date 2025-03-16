@@ -17,6 +17,12 @@ public class CategoryNormalizationFacade : ICategoryNormalizationFacade
     private readonly ApplicationDbContext _context;
     private readonly ILogger<CategoryNormalizationFacade> _logger;
 
+    /// <inheritdoc />
+    public int ExecutionOrder => 10;
+
+    /// <inheritdoc />
+    public string Name => "カテゴリ情報の正規化";
+
     /// <summary>
     /// コンストラクタ
     /// </summary>

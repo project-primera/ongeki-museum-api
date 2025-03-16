@@ -13,6 +13,12 @@ public class ChartNormalizationFacade : IChartNormalizationFacade
     private readonly ApplicationDbContext _context;
     private readonly ILogger<ChartNormalizationFacade> _logger;
 
+    /// <inheritdoc />
+    public int ExecutionOrder => 40;
+
+    /// <inheritdoc />
+    public string Name => "譜面情報の正規化";
+
     /// <summary>
     /// コンストラクタ
     /// </summary>

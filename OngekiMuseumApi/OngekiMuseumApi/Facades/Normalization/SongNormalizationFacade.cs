@@ -15,6 +15,12 @@ public class SongNormalizationFacade : ISongNormalizationFacade
     private readonly ILogger<SongNormalizationFacade> _logger;
     private static readonly TimeZoneInfo JstTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Tokyo Standard Time");
 
+    /// <inheritdoc />
+    public int ExecutionOrder => 30;
+
+    /// <inheritdoc />
+    public string Name => "楽曲情報の正規化";
+
     /// <summary>
     /// コンストラクタ
     /// </summary>
