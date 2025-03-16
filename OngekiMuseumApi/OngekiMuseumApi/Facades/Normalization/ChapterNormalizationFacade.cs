@@ -65,28 +65,30 @@ public class ChapterNormalizationFacade : IChapterNormalizationFacade
 
                 // 既存のチャプターを検索
                 var existingChapter = await _context.Chapters
-                    .FirstOrDefaultAsync(c => c.Id == chapId);
+                    .FirstOrDefaultAsync(c => c.Name == chapterInfo.Chapter);
 
-                if (existingChapter != null)
-                {
-                    // 既存データを更新（名前が変わっている可能性があるため）
-                    if (existingChapter.ChapterName != chapterInfo.Chapter)
-                    {
-                        existingChapter.ChapterName = chapterInfo.Chapter;
-                        _context.Chapters.Update(existingChapter);
-                    }
-                }
-                else
+                if (existingChapter is null)
                 {
                     // 新規データを追加
                     var newChapter = new Chapter
                     {
-                        Id = chapId,
-                        ChapterName = chapterInfo.Chapter
+                        OfficialId = chapId,
+                        Name = chapterInfo.Chapter,
+                        Uuid = Guid.CreateVersion7(),
                     };
 
                     await _context.Chapters.AddAsync(newChapter);
                     addedCount++;
+                }
+                else
+                {
+                    // 既存データを更新（名前が変わっている可能性があるため）
+                    if (existingChapter.Name != chapterInfo.Chapter)
+                    {
+                        existingChapter.OfficialId = chapId;
+                        existingChapter.Name = chapterInfo.Chapter;
+                        _context.Chapters.Update(existingChapter);
+                    }
                 }
             }
 

@@ -67,9 +67,9 @@ public class ChapterService(
                 if (existingChapter != null)
                 {
                     // 既存データを更新（名前が変わっている可能性があるため）
-                    if (existingChapter.ChapterName != chapterInfo.Chapter)
+                    if (existingChapter.Name != chapterInfo.Chapter)
                     {
-                        existingChapter.ChapterName = chapterInfo.Chapter;
+                        existingChapter.Name = chapterInfo.Chapter;
                         _context.Chapters.Update(existingChapter);
                     }
                 }
@@ -79,7 +79,7 @@ public class ChapterService(
                     var newChapter = new Chapter
                     {
                         Id = intChapId,
-                        ChapterName = chapterInfo.Chapter
+                        Name = chapterInfo.Chapter
                     };
 
                     await _context.Chapters.AddAsync(newChapter);
