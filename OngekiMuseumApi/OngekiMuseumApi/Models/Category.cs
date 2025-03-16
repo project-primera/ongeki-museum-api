@@ -11,10 +11,22 @@ namespace OngekiMuseumApi.Models;
 public class Category : ITimestamp
 {
     /// <summary>
-    /// カテゴリID（主キー）
+    /// 主キー（自動採番）
     /// </summary>
     [Key]
     public int Id { get; init; }
+
+    /// <summary>
+    /// UUID
+    /// UUIDv7形式の一意識別子
+    /// </summary>
+    public Guid Uuid { get; set; }
+
+    /// <summary>
+    /// 公式カテゴリID
+    /// 公式サイトで使用されているカテゴリID
+    /// </summary>
+    public int OfficialId { get; set; }
 
     /// <summary>
     /// カテゴリ名

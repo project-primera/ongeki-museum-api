@@ -61,36 +61,37 @@ public class CategoryNormalizationFacade : ICategoryNormalizationFacade
                 }
 
                 // CategoryIdをintに変換
-                if (!int.TryParse(categoryInfo.CategoryId, out var categoryId))
+                if (!int.TryParse(categoryInfo.CategoryId, out var officialCategoryId))
                 {
                     _logger.LogWarningWithSlack($"CategoryId '{categoryInfo.CategoryId}' をint型に変換できませんでした");
                     continue;
                 }
 
-                // 既存のカテゴリを検索
+                // 既存のカテゴリを検索（名前で検索）
                 var existingCategory = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.Id == categoryId);
+                    .FirstOrDefaultAsync(c => c.Name == categoryInfo.Category);
 
-                if (existingCategory != null)
-                {
-                    // 既存データを更新（名前が変わっている可能性があるため）
-                    if (existingCategory.Name != categoryInfo.Category)
-                    {
-                        existingCategory.Name = categoryInfo.Category;
-                        _context.Categories.Update(existingCategory);
-                    }
-                }
-                else
+                if (existingCategory is null)
                 {
                     // 新規データを追加
                     var newCategory = new Category
                     {
-                        Id = categoryId,
+                        OfficialId = officialCategoryId,
+                        Uuid = Guid.CreateVersion7(),
                         Name = categoryInfo.Category
                     };
 
                     await _context.Categories.AddAsync(newCategory);
                     addedCount++;
+                }
+                else
+                {
+                    // 既存データを更新（OfficialIdが変わっている可能性があるため）
+                    if (existingCategory.Name != categoryInfo.Category)
+                    {
+                        existingCategory.OfficialId = officialCategoryId;
+                        _context.Categories.Update(existingCategory);
+                    }
                 }
             }
 

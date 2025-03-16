@@ -34,65 +34,75 @@ public class SongNormalizationFacade : ISongNormalizationFacade
             _logger.LogInformationWithSlack("楽曲情報の正規化を開始します");
 
             // OfficialMusicテーブルから楽曲情報を抽出（dateの値で古い順にソート）
-            // ルナティック楽曲とボーナス楽曲は除外
             var officialMusics = await _context.OfficialMusics
                 .Where(m => m.Title != null && m.Artist != null && m.IdString != null)
-                .Where(m => m.Lunatic != "1") // ルナティック楽曲を除外
-                .Where(m => m.Bonus != "1")   // ボーナス楽曲を除外
                 .OrderBy(m => m.Date) // 追加日の古い順に処理
-                .OrderBy(m => m.IdString) // 追加日の古い順に処理
+                .ThenBy(m => m.CategoryId)
+                .ThenBy(m => m.IdString)
                 .ToListAsync();
 
-            if (officialMusics.Count == 0)
+            // タイトルとアーティストの組み合わせで一意の楽曲を抽出
+            var uniqueOfficialMusics = officialMusics
+                .GroupBy(m => new { m.Title, m.Artist })
+                .Select(g => g.First()) // 各グループの最初の要素を選択
+                .ToList();
+
+            if (uniqueOfficialMusics.Count == 0)
             {
                 _logger.LogWarningWithSlack("抽出可能な楽曲情報がありません");
                 return 0;
             }
 
-            _logger.LogInformationWithSlack($"{officialMusics.Count}件の楽曲情報を抽出しました");
+            _logger.LogInformationWithSlack($"{uniqueOfficialMusics.Count}件の一意な楽曲情報を抽出しました");
 
             int addedCount = 0;
 
-            // 追加日の古い順に処理
-            foreach (var music in officialMusics)
+            // タイトルとアーティストの組み合わせで一意の楽曲を処理
+            foreach (var officialMusic in uniqueOfficialMusics)
             {
                 // nullチェック（念のため）
-                if (string.IsNullOrEmpty(music.Title) || string.IsNullOrEmpty(music.Artist) || string.IsNullOrEmpty(music.IdString))
+                if (string.IsNullOrEmpty(officialMusic.Title) || string.IsNullOrEmpty(officialMusic.Artist) || string.IsNullOrEmpty(officialMusic.IdString))
                 {
                     continue;
                 }
 
                 // IdStringをintに変換
-                if (!int.TryParse(music.IdString, out var songId))
+                if (!int.TryParse(officialMusic.IdString, out var songId))
                 {
-                    _logger.LogWarningWithSlack($"IdString '{music.IdString}' をint型に変換できませんでした");
+                    _logger.LogWarningWithSlack($"IdString '{officialMusic.IdString}' をint型に変換できませんでした");
                     continue;
                 }
 
                 // 既存の楽曲を検索（楽曲名とアーティスト名で検索）
                 var existingSong = await _context.Set<Song>()
-                    .FirstOrDefaultAsync(s => s.Title == music.Title && s.Artist == music.Artist);
+                    .FirstOrDefaultAsync(s => s.Title == officialMusic.Title && s.Artist == officialMusic.Artist);
 
                 // 追加日時の設定
-                DateTimeOffset addedAt = GetAddedAtFromDateString(music.Date);
+                DateTimeOffset addedAt = GetAddedAtFromDateString(officialMusic.Date);
 
                 // 著作権情報の設定（"-"の場合はnull）
-                string? copyright = music.Copyright1 == "-" ? null : music.Copyright1;
+                string? copyright = officialMusic.Copyright1 == "-" ? null : officialMusic.Copyright1;
 
                 if (existingSong != null)
                 {
                     // 既存データを更新
                     bool isUpdated = false;
 
-                    if (existingSong.Title != music.Title)
+                    // if (existingSong.OfficialId != officialMusic.Id)
+                    // {
+                    //     existingSong.Title = officialMusic.Title;
+                    //     isUpdated = true;
+                    // }
+
+                    if (existingSong.Title != officialMusic.Title)
                     {
-                        existingSong.Title = music.Title;
+                        existingSong.Title = officialMusic.Title;
                         isUpdated = true;
                     }
 
-                    if (existingSong.Artist != music.Artist)
+                    if (existingSong.Artist != officialMusic.Artist)
                     {
-                        existingSong.Artist = music.Artist;
+                        existingSong.Artist = officialMusic.Artist;
                         isUpdated = true;
                     }
 
@@ -119,8 +129,8 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                     var newSong = new Song
                     {
                         Id = songId,
-                        Title = music.Title,
-                        Artist = music.Artist,
+                        Title = officialMusic.Title,
+                        Artist = officialMusic.Artist,
                         Copyright = copyright,
                         AddedAt = addedAt
                     };
