@@ -73,8 +73,11 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                     continue;
                 }
 
-                // 既存の楽曲を検索（楽曲名とアーティスト名で検索）
-                var existingSong = await _context.Set<Song>()
+                // 既存の楽曲を検索（まずIdで検索し、見つからない場合は楽曲名とアーティスト名で検索）
+                var existingSongById = await _context.Set<Song>()
+                    .FirstOrDefaultAsync(s => s.Id == songId);
+
+                var existingSong = existingSongById ?? await _context.Set<Song>()
                     .FirstOrDefaultAsync(s => s.Title == officialMusic.Title && s.Artist == officialMusic.Artist);
 
                 // 追加日時の設定
