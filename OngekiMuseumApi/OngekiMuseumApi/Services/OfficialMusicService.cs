@@ -115,16 +115,29 @@ namespace OngekiMuseumApi.Services
                         if (musicJson is { title: "Perfect Shining!!", lunatic: "1" })
                         {
                             // 片方はレベルが0なのでそれで判定
-                            // 0でなければ多分remasterの方
-                            if (musicJson.lev_lnt == "0")
+                            // （lv0→lv13で処理されると0側が上書かれてしまうので両方判定しておく）
+                            if (musicJson.lev_lnt is "0")
                             {
+                                // 0なら多分初稿譜面lunaの方
                                 existingMusic = await context.OfficialMusics
                                     .FirstOrDefaultAsync(m =>
                                         m.Title == NullIfEmpty(musicJson.title) &&
                                         m.Artist == NullIfEmpty(musicJson.artist) &&
                                         m.Lunatic == NullIfEmpty(musicJson.lunatic) &&
                                         m.Bonus == NullIfEmpty(musicJson.bonus) &&
-                                        m.LevExc == "0"
+                                        m.LevLnt == "0"
+                                    );
+                            }
+                            else
+                            {
+                                // 0でなければ多分remasterの方
+                                existingMusic = await context.OfficialMusics
+                                    .FirstOrDefaultAsync(m =>
+                                        m.Title == NullIfEmpty(musicJson.title) &&
+                                        m.Artist == NullIfEmpty(musicJson.artist) &&
+                                        m.Lunatic == NullIfEmpty(musicJson.lunatic) &&
+                                        m.Bonus == NullIfEmpty(musicJson.bonus) &&
+                                        m.LevLnt != "0"
                                     );
                             }
                         }
