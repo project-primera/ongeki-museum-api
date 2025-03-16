@@ -31,10 +31,8 @@ public class SongNormalizationFacade : ISongNormalizationFacade
     {
         _logger.LogInformationWithSlack("楽曲情報の正規化を開始します");
 
-        // 公式楽曲データを取得（非削除のみ）
-        var officialMusics = await _context.OfficialMusics
-            .Where(m => !m.IsDeleted)
-            .ToListAsync();
+        // 公式楽曲データを取得
+        var officialMusics = await _context.OfficialMusics.ToListAsync();
 
         _logger.LogInformationWithSlack($"正規化対象の公式楽曲データ: {officialMusics.Count}件");
 
