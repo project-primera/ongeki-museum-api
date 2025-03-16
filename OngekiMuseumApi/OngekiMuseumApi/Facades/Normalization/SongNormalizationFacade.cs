@@ -29,132 +29,88 @@ public class SongNormalizationFacade : ISongNormalizationFacade
     /// <inheritdoc />
     public async Task<int> NormalizeAsync()
     {
-        try
+        _logger.LogInformationWithSlack("楽曲情報の正規化を開始します");
+
+        // 公式楽曲データを取得（非削除のみ）
+        var officialMusics = await _context.OfficialMusics
+            .Where(m => !m.IsDeleted)
+            .ToListAsync();
+
+        _logger.LogInformationWithSlack($"正規化対象の公式楽曲データ: {officialMusics.Count}件");
+
+        int newCount = 0;
+        int updateCount = 0;
+
+        foreach (var officialMusic in officialMusics)
         {
-            _logger.LogInformationWithSlack("楽曲情報の正規化を開始します");
+            // 曲名とアーティスト名で既存の楽曲を検索
+            var existingSong = await _context.Songs
+                .FirstOrDefaultAsync(s =>
+                    s.Title == officialMusic.Title &&
+                    s.Artist == officialMusic.Artist);
 
-            // OfficialMusicテーブルから楽曲情報を抽出（dateの値で古い順にソート）
-            var officialMusics = await _context.OfficialMusics
-                .Where(m => m.Title != null && m.Artist != null && m.IdString != null)
-                .OrderBy(m => m.Date) // 追加日の古い順に処理
-                .ThenBy(m => m.CategoryId)
-                .ThenBy(m => m.IdString)
-                .ToListAsync();
-
-            // タイトルとアーティストの組み合わせで一意の楽曲を抽出
-            var uniqueOfficialMusics = officialMusics
-                .GroupBy(m => new { m.Title, m.Artist })
-                .Select(g => g.First()) // 各グループの最初の要素を選択
-                .ToList();
-
-            if (uniqueOfficialMusics.Count == 0)
+            if (existingSong is null)
             {
-                _logger.LogWarningWithSlack("抽出可能な楽曲情報がありません");
-                return 0;
+                // 新規作成
+                var newSong = new Song
+                {
+                    Uuid = Guid.NewGuid(), // 新しいUUIDを生成
+                    OfficialUuid = officialMusic.Uuid,
+                    Title = officialMusic.Title ?? string.Empty,
+                    Artist = officialMusic.Artist ?? string.Empty,
+                    Copyright = officialMusic.Copyright1,
+                    AddedAt = GetAddedAtFromDateString(officialMusic.Date),
+                };
+
+                await _context.Songs.AddAsync(newSong);
+                newCount++;
+
+                _logger.LogDebugWithSlack($"楽曲を新規作成しました: {newSong.Title} - {newSong.Artist}");
             }
-
-            _logger.LogInformationWithSlack($"{uniqueOfficialMusics.Count}件の一意な楽曲情報を抽出しました");
-
-            int addedCount = 0;
-
-            // タイトルとアーティストの組み合わせで一意の楽曲を処理
-            foreach (var officialMusic in uniqueOfficialMusics)
+            else
             {
-                // nullチェック（念のため）
-                if (string.IsNullOrEmpty(officialMusic.Title) || string.IsNullOrEmpty(officialMusic.Artist) || string.IsNullOrEmpty(officialMusic.IdString))
+                // 更新が必要かどうかを確認
+                bool needsUpdate = false;
+
+                // OfficialUuidの確認
+                if (existingSong.OfficialUuid != officialMusic.Uuid)
                 {
-                    continue;
+                    existingSong.OfficialUuid = officialMusic.Uuid;
+                    needsUpdate = true;
                 }
 
-                // IdStringをintに変換
-                if (!int.TryParse(officialMusic.IdString, out var songId))
+                // Copyrightの確認
+                if (existingSong.Copyright != officialMusic.Copyright1)
                 {
-                    _logger.LogWarningWithSlack($"IdString '{officialMusic.IdString}' をint型に変換できませんでした");
-                    continue;
+                    existingSong.Copyright = officialMusic.Copyright1;
+                    needsUpdate = true;
                 }
 
-                // 既存の楽曲を検索（まずIdで検索し、見つからない場合は楽曲名とアーティスト名で検索）
-                var existingSongById = await _context.Set<Song>()
-                    .FirstOrDefaultAsync(s => s.Id == songId);
-
-                var existingSong = existingSongById ?? await _context.Set<Song>()
-                    .FirstOrDefaultAsync(s => s.Title == officialMusic.Title && s.Artist == officialMusic.Artist);
-
-                // 追加日時の設定
-                DateTimeOffset addedAt = GetAddedAtFromDateString(officialMusic.Date);
-
-                // 著作権情報の設定（"-"の場合はnull）
-                string? copyright = officialMusic.Copyright1 == "-" ? null : officialMusic.Copyright1;
-
-                if (existingSong is null)
+                // AddedAtの確認
+                var newAddedAt = GetAddedAtFromDateString(officialMusic.Date);
+                if (existingSong.AddedAt != newAddedAt)
                 {
-                    // 新規データを追加
-                    var newSong = new Song
-                    {
-                        Id = songId,
-                        Uuid = Guid.CreateVersion7(),
-                        OfficialUuid = officialMusic.Uuid,
-                        Title = officialMusic.Title,
-                        Artist = officialMusic.Artist,
-                        Copyright = copyright,
-                        AddedAt = addedAt
-                    };
-
-                    await _context.AddAsync(newSong);
-                    addedCount++;
+                    existingSong.AddedAt = newAddedAt;
+                    needsUpdate = true;
                 }
-                else
+
+                if (needsUpdate)
                 {
-                    // 既存データを更新
-                    bool isUpdated = false;
+                    existingSong.UpdatedAt = DateTimeOffset.UtcNow;
+                    _context.Songs.Update(existingSong);
+                    updateCount++;
 
-                    if (existingSong.OfficialUuid != officialMusic.Uuid)
-                    {
-                        existingSong.OfficialUuid = officialMusic.Uuid;
-                        isUpdated = true;
-                    }
-
-                    if (existingSong.Title != officialMusic.Title)
-                    {
-                        existingSong.Title = officialMusic.Title;
-                        isUpdated = true;
-                    }
-
-                    if (existingSong.Artist != officialMusic.Artist)
-                    {
-                        existingSong.Artist = officialMusic.Artist;
-                        isUpdated = true;
-                    }
-
-                    if (existingSong.Copyright != copyright)
-                    {
-                        existingSong.Copyright = copyright;
-                        isUpdated = true;
-                    }
-
-                    if (existingSong.AddedAt != addedAt)
-                    {
-                        existingSong.AddedAt = addedAt;
-                        isUpdated = true;
-                    }
-
-                    if (isUpdated)
-                    {
-                        _context.Update(existingSong);
-                    }
+                    _logger.LogDebugWithSlack($"楽曲を更新しました: {existingSong.Title} - {existingSong.Artist}");
                 }
             }
-
-            await _context.SaveChangesAsync();
-            _logger.LogInformationWithSlack($"{addedCount}件の新規楽曲データを保存しました");
-
-            return addedCount;
         }
-        catch (Exception ex)
-        {
-            _logger.LogErrorWithSlack(ex, "楽曲情報の正規化・保存中にエラーが発生しました");
-            throw;
-        }
+
+        // 変更をデータベースに保存
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformationWithSlack($"楽曲情報の正規化が完了しました: 新規作成 {newCount}件, 更新 {updateCount}件");
+
+        return newCount + updateCount;
     }
 
     /// <summary>
