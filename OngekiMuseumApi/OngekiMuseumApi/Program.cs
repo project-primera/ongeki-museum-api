@@ -39,6 +39,8 @@ public class Program
         builder.Services.AddScoped<INormalizationFacade>(sp => sp.GetRequiredService<ICategoryNormalizationFacade>());
         builder.Services.AddScoped<ISongNormalizationFacade, SongNormalizationFacade>();
         builder.Services.AddScoped<INormalizationFacade>(sp => sp.GetRequiredService<ISongNormalizationFacade>());
+        builder.Services.AddScoped<IChartNormalizationFacade, ChartNormalizationFacade>();
+        builder.Services.AddScoped<INormalizationFacade>(sp => sp.GetRequiredService<IChartNormalizationFacade>());
 
         // バックグラウンドサービスの登録
         builder.Services.AddHostedService<OfficialMusicBackgroundService>();

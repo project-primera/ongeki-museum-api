@@ -31,6 +31,11 @@ namespace OngekiMuseumApi.Data
         public DbSet<Song> Songs => Set<Song>();
 
         /// <summary>
+        /// オンゲキ譜面データ
+        /// </summary>
+        public DbSet<Chart> Charts => Set<Chart>();
+
+        /// <summary>
         /// モデル構成時に呼び出されるメソッド
         /// </summary>
         /// <param name="modelBuilder">モデルビルダー</param>
