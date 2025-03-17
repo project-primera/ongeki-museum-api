@@ -16,13 +16,14 @@ namespace OngekiMuseumApi.Services
     /// <param name="httpClientFactory">HTTPクライアントファクトリ</param>
     /// <param name="logger">ロガー</param>
     public class OfficialMusicService(
+        IConfiguration configuration,
         ApplicationDbContext context,
         IHttpClientFactory httpClientFactory,
         ILogger<OfficialMusicService> logger
         ) : IOfficialMusicService
     {
-        private static readonly List<string> MusicJsonUrls = [
-            "https://ongeki.sega.jp/assets/json/music/music.json"
+        private readonly List<string> MusicJsonUrls = [
+            configuration["Ongeki:MusicJsonUrl"]
         ];
 
         /// <summary>
