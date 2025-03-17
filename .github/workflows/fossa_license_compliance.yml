@@ -1,0 +1,31 @@
+name: FOSSA License Compliance
+
+on:
+    workflow_dispatch:
+    pull_request:
+    push:
+      branches:
+        - main
+        - develop
+
+jobs:
+  fossa-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # リポジトリをチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # FOSSAスキャンの実行
+      - name: Run FOSSA Scan
+        uses: fossas/fossa-action@main
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+
+      # FOSSAテストの実行 (ポリシー違反がないか確認)
+      - name: Run FOSSA Test
+        uses: fossas/fossa-action@main
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+          run-tests: true
