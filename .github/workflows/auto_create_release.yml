@@ -1,0 +1,81 @@
+name: Auto Create Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main  # mainブランチへのPRがマージされた時に実行
+
+jobs:
+  create-release:
+    # PRがマージされた場合のみ実行
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Release:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得
+
+      - name: Extract version from PR title
+        id: extract_version
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          VERSION=$(echo $PR_TITLE | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' || echo "")
+
+          if [ -z "$VERSION" ]; then
+            # バージョン番号が見つからない場合、タイトルから抽出を試みる
+            VERSION=$(echo $PR_TITLE | sed -n 's/.*Release: \(v[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' || echo "")
+
+            # それでも見つからなければ、Releaseの後の文字列を使用
+            if [ -z "$VERSION" ]; then
+              VERSION=$(echo $PR_TITLE | sed -n 's/Release: \(.*\)/\1/p' | xargs || echo "")
+            fi
+          fi
+
+          if [ -z "$VERSION" ]; then
+            echo "Failed to extract version from PR title"
+            exit 1
+          fi
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Extracted version: $VERSION"
+
+      - name: Create release notes
+        id: release_notes
+        run: |
+          # PRの本文から情報を取得
+          PR_BODY="${{ github.event.pull_request.body }}"
+          echo "$PR_BODY" > release_notes.md
+
+          # 必要に応じてリリースノートをフォーマット
+          # PRの本文がそのままリリースノートとして適さない場合、ここで加工
+
+      - name: Create tag
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+          # タグが既に存在するか確認
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists. Skipping tag creation."
+          else
+            echo "Creating tag $VERSION"
+            git tag $VERSION
+            git push origin $VERSION
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # リリースが既に存在するか確認
+          EXISTING_RELEASE=$(gh release view $VERSION 2>/dev/null || echo "")
+
+          if [ -n "$EXISTING_RELEASE" ]; then
+            echo "Release $VERSION already exists. Updating release."
+            gh release edit $VERSION --notes-file release_notes.md
+          else
+            echo "Creating new release $VERSION"
+            gh release create $VERSION --title "Release $VERSION" --notes-file release_notes.md
+          fi

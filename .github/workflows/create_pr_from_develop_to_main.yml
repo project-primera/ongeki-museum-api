@@ -1,0 +1,122 @@
+name: Auto PR from develop to main
+
+on:
+  push:
+    branches:
+      - develop  # developブランチへのpushで実行
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Get latest release version
+        id: latest_release
+        run: |
+          # 最新のリリースタグを取得
+          LATEST_TAG=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "0.0.0")
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+          echo "Latest release tag: ${LATEST_TAG}"
+
+      - name: Calculate next version
+        id: next_version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 最新のリリースタグと現在のdevelopブランチの間にマージされたPRを取得
+          echo "Finding merged PRs since ${LATEST_TAG}..."
+
+          # メジャー、マイナー、パッチの変更フラグを初期化
+          MAJOR_CHANGE=false
+          MINOR_CHANGE=false
+          PATCH_CHANGE=false
+
+          # タグ以降にdevelopにマージされたPRとそのタグを収集
+          PR_LIST=""
+
+          # mainブランチの最新コミットハッシュを取得
+          MAIN_HASH=$(git rev-parse origin/main)
+
+          # 最新のタグコミットのハッシュを取得
+          TAG_HASH=$(git rev-list -n 1 ${LATEST_TAG} 2>/dev/null || git hash-object -t tree /dev/null)
+
+          # developブランチの最新コミットハッシュを取得
+          git fetch origin develop
+          DEVELOP_HASH=$(git rev-parse origin/develop)
+
+          # タグ以降にdevelopにマージされたPRを検索
+          MERGED_PRS=$(git log ${TAG_HASH}..${DEVELOP_HASH} --merges --oneline | grep 'Merge pull request' || echo "")
+
+          if [ -n "$MERGED_PRS" ]; then
+            while read -r PR; do
+              PR_NUM=$(echo $PR | grep -o '#[0-9]\+' | sed 's/#//')
+
+              if [ -n "$PR_NUM" ]; then
+                # PRのタイトルとラベルを取得
+                echo "Fetching info for PR #${PR_NUM}..."
+                PR_INFO=$(gh pr view $PR_NUM --json title,labels -q '"Labels: " + (if (.labels | length) > 0 then (.labels | map(.name) | join(", ")) else "none" end)' 2>&1 || echo "Failed to get info: $?")
+
+                # ラベルに基づいてバージョン変更の種類を決定
+                if echo "$PR_INFO" | grep -i "Major" > /dev/null; then
+                  MAJOR_CHANGE=true
+                elif echo "$PR_INFO" | grep -i "Minor" > /dev/null; then
+                  MINOR_CHANGE=true
+                else
+                  PATCH_CHANGE=true
+                fi
+
+                PR_LIST="${PR_LIST}* #${PR_NUM} ${PR_INFO}\n"
+              fi
+            done <<< "$MERGED_PRS"
+          else
+            PR_LIST="No PRs merged since last release.\n"
+          fi
+
+          # PRリストをファイルに保存
+          echo -e "${PR_LIST}" > pr_list.txt
+
+          # 現在のバージョンをパースして、次のバージョンを計算
+          CURRENT_VERSION=${LATEST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+
+          if [ "$CURRENT_VERSION" = "0.0.0" ]; then
+            NEXT_VERSION="0.0.1"
+          elif [ "$MAJOR_CHANGE" = "true" ]; then
+            NEXT_VERSION="$((MAJOR + 1)).0.0"
+          elif [ "$MINOR_CHANGE" = "true" ]; then
+            NEXT_VERSION="${MAJOR}.$((MINOR + 1)).0"
+          else
+            NEXT_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          fi
+
+          echo "NEXT_VERSION=v${NEXT_VERSION}" >> $GITHUB_ENV
+          echo "Next version: v${NEXT_VERSION}"
+
+      - name: Create PR from develop to main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # PRが既に存在するか確認
+          EXISTING_PR=$(gh pr list --base main --head develop --state open --json number -q '.[0].number' || echo "")
+
+          if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
+            echo "PR already exists: #${EXISTING_PR}"
+            # 既存のPRを更新
+            gh pr edit ${EXISTING_PR} --title "Release: ${NEXT_VERSION}" --body "$(cat pr_list.txt)"
+          else
+            # 新しいPRを作成
+            gh pr create --base main --head develop \
+              --title "Release: ${NEXT_VERSION}" \
+              --body "$(cat pr_list.txt)" \
+              --label "release"
+          fi

@@ -1,0 +1,6 @@
+@OngekiMuseumApi_HostAddress = http://localhost:5038
+
+GET {{OngekiMuseumApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
