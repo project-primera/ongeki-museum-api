@@ -1,10 +1,7 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Extensions;
-using OngekiMuseumApi.Models;
 
 namespace OngekiMuseumApi.Controllers.Api;
 
@@ -48,7 +45,7 @@ public class ChartController : ControllerBase
                 chart.Uuid,
                 chart.SongUuid,
                 Difficulty = chart.Difficulty.ToString(),
-                Level = chart.Level,
+                chart.Level,
                 chart.IsBonus,
             }).OrderByDescending(chart => chart.SongUuid)
               .ThenBy(chart => chart.Difficulty)
@@ -84,12 +81,12 @@ public class ChartController : ControllerBase
                         ChartUuid = chart.Uuid,
                         SongUuid = song.Uuid,
                         Difficulty = chart.Difficulty.ToString(),
-                        Level = chart.Level,
-                        IsBonus = chart.IsBonus,
-                        Title = song.Title ?? "",
-                        Artist = song.Artist ?? "",
+                        chart.Level,
+                        chart.IsBonus,
+                        song.Title,
+                        song.Artist,
                         Copyright = song.Copyright ?? "",
-                        AddedAt = song.AddedAt,
+                        song.AddedAt,
                     })
                 .OrderByDescending(data => data.AddedAt)
                 .ThenBy(data => data.ChartUuid)

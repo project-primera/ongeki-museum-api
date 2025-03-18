@@ -1,14 +1,12 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 
-namespace OngekiMuseumApi.Tests
+namespace OngekiMuseumApi.Tests;
+
+public class Tests
 {
-    public class Tests
+    [Fact]
+    public void Test1()
     {
-        [Fact]
-        public void Test1()
-        {
-            Assert.True(true);
-        }
+        Assert.True(true);
     }
 }

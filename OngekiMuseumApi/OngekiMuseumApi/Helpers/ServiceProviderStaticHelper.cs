@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace OngekiMuseumApi.Helpers;
 
 /// <summary>
@@ -23,7 +21,7 @@ public static class ServiceProviderStaticHelper
     /// </summary>
     /// <returns>サービスプロバイダー</returns>
     /// <exception cref="InvalidOperationException">サービスプロバイダーが設定されていない場合</exception>
-    public static IServiceProvider GetServiceProvider()
+    private static IServiceProvider GetServiceProvider()
     {
         if (_serviceProvider == null)
         {

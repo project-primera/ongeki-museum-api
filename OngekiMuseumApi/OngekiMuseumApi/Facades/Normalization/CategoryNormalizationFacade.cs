@@ -1,11 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Extensions;
 using OngekiMuseumApi.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OngekiMuseumApi.Facades.Normalization;
 

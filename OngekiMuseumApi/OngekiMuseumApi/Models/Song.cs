@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,7 +20,7 @@ public class Song : ITimestamp
     /// UUID
     /// UUIDv7形式の一意識別子
     /// </summary>
-    public Guid Uuid { get; set; }
+    public Guid Uuid { get; init; }
 
     /// <summary>
     /// 公式カテゴリID
@@ -33,13 +32,13 @@ public class Song : ITimestamp
     /// 曲名
     /// </summary>
     [MaxLength(128)]
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; init; } = string.Empty;
 
     /// <summary>
     /// アーティスト名
     /// </summary>
     [MaxLength(256)]
-    public string Artist { get; set; } = string.Empty;
+    public string Artist { get; init; } = string.Empty;
 
     /// <summary>
     /// 著作権情報

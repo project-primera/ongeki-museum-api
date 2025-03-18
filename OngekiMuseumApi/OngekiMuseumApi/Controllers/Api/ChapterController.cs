@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.Data;
@@ -44,7 +42,7 @@ public class ChapterController : ControllerBase
             {
                 chapter.Uuid,
                 chapter.OfficialId,
-                Name = chapter.Name ?? "",
+                chapter.Name,
             }).OrderBy(chapter => chapter.OfficialId).ToList();
 
             return Ok(result);

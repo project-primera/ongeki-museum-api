@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,7 +19,7 @@ public class Category : ITimestamp
     /// UUID
     /// UUIDv7形式の一意識別子
     /// </summary>
-    public Guid Uuid { get; set; }
+    public Guid Uuid { get; init; }
 
     /// <summary>
     /// 公式カテゴリID
@@ -32,7 +31,7 @@ public class Category : ITimestamp
     /// カテゴリ名
     /// </summary>
     [MaxLength(16)]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
 
     /// <inheritdoc />
     public DateTimeOffset CreatedAt { get; set; }
