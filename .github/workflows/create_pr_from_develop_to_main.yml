@@ -64,7 +64,7 @@ jobs:
               if [ -n "$PR_NUM" ]; then
                 # PRのタイトルとラベルを取得
                 echo "Fetching info for PR #${PR_NUM}..."
-                PR_INFO=$(gh pr view $PR_NUM --json title,labels -q '"(Labels: " + (if (.labels | length) > 0 then (.labels | map(.name) | join(", ")) else "none" end) + ")"' 2>&1 || echo "Failed to get info: $?")
+                PR_INFO=$(gh pr view $PR_NUM --json title,labels -q '"Labels: " + (if (.labels | length) > 0 then (.labels | map(.name) | join(", ")) else "none" end)' 2>&1 || echo "Failed to get info: $?")
 
                 # ラベルに基づいてバージョン変更の種類を決定
                 if echo "$PR_INFO" | grep -i "Major" > /dev/null; then
@@ -75,7 +75,7 @@ jobs:
                   PATCH_CHANGE=true
                 fi
 
-                PR_LIST="${PR_LIST}* #${PR_NUM}: ${PR_INFO}\n"
+                PR_LIST="${PR_LIST}* #${PR_NUM} ${PR_INFO}\n"
               fi
             done <<< "$MERGED_PRS"
           else
