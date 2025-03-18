@@ -1,0 +1,89 @@
+name: Update Version and Build Docker Image
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-version-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'  # 必要な.NETバージョンを指定
+
+      - name: Get release version
+        id: get_version
+        run: |
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          # vから始まる場合、先頭のvを削除
+          VERSION="${RELEASE_TAG#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Release version: $VERSION"
+
+      - name: Find and update project files
+        run: |
+          # すべての.csprojファイルを検索
+          find . -name "*.csproj" -type f | while read -r PROJECT_FILE; do
+            echo "Updating version in $PROJECT_FILE to $VERSION"
+
+            # VersionPrefixが存在するか確認し、存在すれば更新、なければ追加
+            if grep -q "<VersionPrefix>" "$PROJECT_FILE"; then
+              sed -i "s|<VersionPrefix>.*</VersionPrefix>|<VersionPrefix>$VERSION</VersionPrefix>|g" "$PROJECT_FILE"
+            else
+              # PropertyGroupの後にVersionPrefixを挿入
+              sed -i "/<PropertyGroup>/a \    <VersionPrefix>$VERSION</VersionPrefix>" "$PROJECT_FILE"
+            fi
+
+            # 変更を確認
+            echo "Updated content:"
+            grep -A 1 -B 1 "VersionPrefix" "$PROJECT_FILE" || echo "VersionPrefix not found after update"
+          done
+
+      - name: Configure Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract Docker image information
+        id: docker_info
+        run: |
+          # リポジトリ名を取得（スラッシュやドットをハイフンに置き換え）
+          REPO_NAME=$(echo ${{ github.repository }} | sed 's/.*\///' | tr '.' '-' | tr '[:upper:]' '[:lower:]')
+          DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/$REPO_NAME"
+          echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
+          echo "Docker image name: $DOCKER_IMAGE"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./OngekiMuseumApi/OngekiMuseumApi
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Create summary
+        run: |
+          echo "## Build and Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Docker Image:** ${{ env.DOCKER_IMAGE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tags:** latest, ${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Updated Project Files:" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.csproj" -type f | while read -r PROJECT_FILE; do
+            echo "- \`$PROJECT_FILE\`" >> $GITHUB_STEP_SUMMARY
+          done
