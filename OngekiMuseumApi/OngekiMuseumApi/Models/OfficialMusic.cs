@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,7 +19,7 @@ public class OfficialMusic : ITimestamp
     /// UUID
     /// UUIDv7形式の一意識別子
     /// </summary>
-    public Guid Uuid { get; set; }
+    public Guid Uuid { get; init; }
 
     /// <summary>
     /// 新曲フラグ
@@ -58,7 +57,7 @@ public class OfficialMusic : ITimestamp
     /// 楽曲ID
     /// </summary>
     [MaxLength(6)]
-    public string? IdString { get; set; }
+    public string? IdString { get; init; }
 
     /// <summary>
     /// チャプターID
@@ -156,7 +155,7 @@ public class OfficialMusic : ITimestamp
     /// 削除フラグ
     /// 公式サイトから削除された楽曲の場合はtrue
     /// </summary>
-    public bool IsDeleted { get; set; } = false;
+    public bool IsDeleted { get; set; }
 
     /// <inheritdoc />
     public DateTimeOffset CreatedAt { get; set; }

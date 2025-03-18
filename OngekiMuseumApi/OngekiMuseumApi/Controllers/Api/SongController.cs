@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.Data;
@@ -46,8 +44,8 @@ public class SongController : ControllerBase
             {
                 song.Uuid,
                 song.OfficialUuid,
-                Title = song.Title ?? "",
-                Artist = song.Artist ?? "",
+                Title = song.Title,
+                Artist = song.Artist,
                 Copyright = song.Copyright ?? "",
                 song.AddedAt,
             }).OrderByDescending(song => song.AddedAt).ToList();

@@ -30,7 +30,9 @@ public class ChartNormalizationFacade : IChartNormalizationFacade
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// 譜面情報の正規化を行います
+    /// </summary>
     public async Task<int> NormalizeAsync()
     {
         try

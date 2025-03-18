@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OngekiMuseumApi.Data;
@@ -45,8 +43,8 @@ public class CategoryController : ControllerBase
             var result = categories.Select(category => new
             {
                 category.Uuid,
-                OfficialId = category.OfficialId,
-                Name = category.Name ?? "",
+                category.OfficialId,
+                category.Name,
             }).OrderBy(category => category.OfficialId).ToList();
 
             return Ok(result);

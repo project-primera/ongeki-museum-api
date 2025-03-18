@@ -1,8 +1,6 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace OngekiMuseumApi.Services;
 
@@ -13,15 +11,11 @@ namespace OngekiMuseumApi.Services;
 /// コンストラクタ
 /// </remarks>
 /// <param name="configuration">設定</param>
-/// <param name="slackWebhookService">Slack Webhookサービス</param>
 public class SlackLoggerService(
     IConfiguration configuration,
     IHttpClientFactory httpClientFactory
     ) : ISlackLoggerService
 {
-    private readonly IConfiguration _configuration = configuration;
-    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-
     /// <inheritdoc />
     public void SendLogToSlack(LogLevel logLevel, string message, params object?[] args)
     {
@@ -60,13 +54,13 @@ public class SlackLoggerService(
     {
         return logLevel switch
         {
-            LogLevel.Trace => _configuration["Slack:TraceWebhookUrl"] ?? string.Empty,
-            LogLevel.Debug => _configuration["Slack:DebugWebhookUrl"] ?? string.Empty,
-            LogLevel.Information => _configuration["Slack:InformationWebhookUrl"] ?? string.Empty,
-            LogLevel.Warning => _configuration["Slack:WarningWebhookUrl"] ?? string.Empty,
-            LogLevel.Error => _configuration["Slack:ErrorWebhookUrl"] ?? string.Empty,
-            LogLevel.Critical => _configuration["Slack:CriticalWebhookUrl"] ?? string.Empty,
-            _ => _configuration["Slack:CriticalWebhookUrl"] ?? string.Empty
+            LogLevel.Trace => configuration["Slack:TraceWebhookUrl"] ?? string.Empty,
+            LogLevel.Debug => configuration["Slack:DebugWebhookUrl"] ?? string.Empty,
+            LogLevel.Information => configuration["Slack:InformationWebhookUrl"] ?? string.Empty,
+            LogLevel.Warning => configuration["Slack:WarningWebhookUrl"] ?? string.Empty,
+            LogLevel.Error => configuration["Slack:ErrorWebhookUrl"] ?? string.Empty,
+            LogLevel.Critical => configuration["Slack:CriticalWebhookUrl"] ?? string.Empty,
+            _ => configuration["Slack:CriticalWebhookUrl"] ?? string.Empty
         };
     }
 
@@ -87,14 +81,14 @@ public class SlackLoggerService(
             Text = message
         };
 
-        var client = _httpClientFactory.CreateClient();
+        var client = httpClientFactory.CreateClient();
         var content = new StringContent(JsonSerializer.Serialize(messageData), Encoding.UTF8, "application/json");
 
         try
         {
             client.PostAsync(url, content).ConfigureAwait(false);
         }
-        catch (Exception _)
+        catch (Exception)
         {
             // Webhookはエラーが発生しても処理を続行する
         }

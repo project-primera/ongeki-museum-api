@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,7 +19,7 @@ public class Chapter : ITimestamp
     /// UUID
     /// UUIDv7形式の一意識別子
     /// </summary>
-    public Guid Uuid { get; set; }
+    public Guid Uuid { get; init; }
 
     /// <summary>
     /// 公式カテゴリID

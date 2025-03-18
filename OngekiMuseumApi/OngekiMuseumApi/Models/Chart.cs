@@ -20,18 +20,18 @@ public class Chart : ITimestamp
     /// UUID
     /// UUIDv7形式の一意識別子
     /// </summary>
-    public Guid Uuid { get; set; }
+    public Guid Uuid { get; init; }
 
     /// <summary>
     /// 楽曲UUID
     /// 関連する楽曲のUUID
     /// </summary>
-    public Guid SongUuid { get; set; }
+    public Guid SongUuid { get; init; }
 
     /// <summary>
     /// 難易度
     /// </summary>
-    public Difficulty Difficulty { get; set; }
+    public Difficulty Difficulty { get; init; }
 
     /// <summary>
     /// レベル値
