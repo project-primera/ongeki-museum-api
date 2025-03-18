@@ -30,6 +30,8 @@ jobs:
 
       - name: Calculate next version
         id: next_version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 最新のリリースタグと現在のdevelopブランチの間にマージされたPRを取得
           echo "Finding merged PRs since ${LATEST_TAG}..."
@@ -61,7 +63,8 @@ jobs:
 
               if [ -n "$PR_NUM" ]; then
                 # PRのタイトルとラベルを取得
-                PR_INFO=$(gh pr view $PR_NUM --json title,labels -q '.title + " (Labels: " + (if (.labels | length) > 0 then (.labels | map(.name) | join(", ")) else "none" end) + ")"' || echo "Failed to get PR info")
+                echo "Fetching info for PR #${PR_NUM}..."
+                PR_INFO=$(gh pr view $PR_NUM --json title,labels -q '.title + " (Labels: " + (if (.labels | length) > 0 then (.labels | map(.name) | join(", ")) else "none" end) + ")"' 2>&1 || echo "Failed to get info: $?")
 
                 # ラベルに基づいてバージョン変更の種類を決定
                 if echo "$PR_INFO" | grep -i "Major" > /dev/null; then
