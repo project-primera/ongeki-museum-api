@@ -162,7 +162,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./OngekiMuseumApi/OngekiMuseumApi
+          context: ./OngekiMuseumApi
+          file: ./OngekiMuseumApi/Dockerfile
           push: true
           tags: |
             ${{ steps.docker_info.outputs.docker_image }}:latest
