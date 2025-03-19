@@ -75,7 +75,7 @@ jobs:
                   PATCH_CHANGE=true
                 fi
 
-                PR_LIST="${PR_LIST}* #${PR_NUM} ${PR_INFO}\n"
+                PR_LIST="${PR_LIST}* [ ] #${PR_NUM} ${PR_INFO}\n"
               fi
             done <<< "$MERGED_PRS"
           else
