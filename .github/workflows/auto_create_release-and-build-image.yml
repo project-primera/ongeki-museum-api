@@ -152,7 +152,7 @@ jobs:
         run: |
           # リポジトリ名を取得（スラッシュやドットをハイフンに置き換え）
           REPO_NAME=$(echo ${{ github.repository }} | sed 's/.*\///' | tr '.' '-' | tr '[:upper:]' '[:lower:]')
-          DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/$REPO_NAME"
+          DOCKER_IMAGE="${{ secrets.DOCKER_REPOSITORY_NAME }}/$REPO_NAME"
           # 環境変数に設定
           echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
           # ステップの出力として設定
@@ -163,7 +163,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./OngekiMuseumApi
-          file: ./OngekiMuseumApi/Dockerfile
+          file: ./OngekiMuseumApi/OngekiMuseumApi/Dockerfile
           push: true
           tags: |
             ${{ steps.docker_info.outputs.docker_image }}:latest
