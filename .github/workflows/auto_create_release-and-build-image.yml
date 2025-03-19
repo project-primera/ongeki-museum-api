@@ -113,7 +113,10 @@ jobs:
           # vから始まる場合、先頭のvを削除
           VERSION="${VERSION#v}"
 
+          # 環境変数に設定
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # ステップの出力として設定
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Release version: $VERSION"
 
       - name: Find and update project files
@@ -150,7 +153,10 @@ jobs:
           # リポジトリ名を取得（スラッシュやドットをハイフンに置き換え）
           REPO_NAME=$(echo ${{ github.repository }} | sed 's/.*\///' | tr '.' '-' | tr '[:upper:]' '[:lower:]')
           DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/$REPO_NAME"
+          # 環境変数に設定
           echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
+          # ステップの出力として設定
+          echo "docker_image=$DOCKER_IMAGE" >> $GITHUB_OUTPUT
           echo "Docker image name: $DOCKER_IMAGE"
 
       - name: Build and push Docker image
@@ -159,8 +165,8 @@ jobs:
           context: ./OngekiMuseumApi/OngekiMuseumApi
           push: true
           tags: |
-            ${{ env.DOCKER_IMAGE }}:latest
-            ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
+            ${{ steps.docker_info.outputs.docker_image }}:latest
+            ${{ steps.docker_info.outputs.docker_image }}:${{ steps.get_version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -168,9 +174,9 @@ jobs:
         run: |
           echo "## Build and Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version:** ${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Docker Image:** ${{ env.DOCKER_IMAGE }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Tags:** latest, ${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ steps.get_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Docker Image:** ${{ steps.docker_info.outputs.docker_image }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tags:** latest, ${{ steps.get_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Updated Project Files:" >> $GITHUB_STEP_SUMMARY
           find . -name "*.csproj" -type f | while read -r PROJECT_FILE; do
