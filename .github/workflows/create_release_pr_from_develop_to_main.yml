@@ -1,4 +1,4 @@
-name: Auto PR from develop to main
+name: Create Release PR from develop to main
 
 on:
   push:
@@ -99,8 +99,8 @@ jobs:
             NEXT_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
           fi
 
-          echo "NEXT_VERSION=v${NEXT_VERSION}" >> $GITHUB_ENV
-          echo "Next version: v${NEXT_VERSION}"
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+          echo "Next version: ${NEXT_VERSION}"
 
       - name: Create PR from develop to main
         env:
