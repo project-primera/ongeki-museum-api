@@ -1,0 +1,178 @@
+name: Auto Create Release and Build Image
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main  # mainブランチへのPRがマージされた時に実行
+
+jobs:
+  create-release:
+    # PRがマージされた場合のみ実行
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Release:')
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}  # ステップの出力を参照
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得
+
+      - name: Extract version from PR title
+        id: extract_version
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          VERSION=$(echo $PR_TITLE | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' || echo "")
+
+          if [ -z "$VERSION" ]; then
+            # バージョン番号が見つからない場合、タイトルから抽出を試みる
+            VERSION=$(echo $PR_TITLE | sed -n 's/.*Release: \(v[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' || echo "")
+
+            # それでも見つからなければ、Releaseの後の文字列を使用
+            if [ -z "$VERSION" ]; then
+              VERSION=$(echo $PR_TITLE | sed -n 's/Release: \(.*\)/\1/p' | xargs || echo "")
+            fi
+          fi
+
+          if [ -z "$VERSION" ]; then
+            echo "Failed to extract version from PR title"
+            exit 1
+          fi
+
+          # 環境変数に設定
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # ステップの出力として設定（ジョブの出力に使用）
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+
+      - name: Create release notes
+        id: release_notes
+        run: |
+          # PRの本文から情報を取得
+          PR_BODY="${{ github.event.pull_request.body }}"
+          echo "$PR_BODY" > release_notes.md
+
+          # 必要に応じてリリースノートをフォーマット
+          # PRの本文がそのままリリースノートとして適さない場合、ここで加工
+
+      - name: Create tag
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+          # タグが既に存在するか確認
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists. Skipping tag creation."
+          else
+            echo "Creating tag $VERSION"
+            git tag $VERSION
+            git push origin $VERSION
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # リリースが既に存在するか確認
+          EXISTING_RELEASE=$(gh release view $VERSION 2>/dev/null || echo "")
+
+          if [ -n "$EXISTING_RELEASE" ]; then
+            echo "Release $VERSION already exists. Updating release."
+            gh release edit $VERSION --notes-file release_notes.md
+          else
+            echo "Creating new release $VERSION"
+            gh release create $VERSION --title "Release $VERSION" --notes-file release_notes.md
+          fi
+
+  update-version-and-build:
+    needs: create-release  # create-releaseジョブが完了してから実行
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'  # 必要な.NETバージョンを指定
+
+      - name: Get release version
+        id: get_version
+        run: |
+          # create-releaseジョブで設定されたバージョン情報を使用
+          if [ -n "${{ needs.create-release.outputs.version }}" ]; then
+            VERSION="${{ needs.create-release.outputs.version }}"
+          else
+            # 最新のタグを取得
+            VERSION=$(git describe --tags --abbrev=0)
+          fi
+
+          # vから始まる場合、先頭のvを削除
+          VERSION="${VERSION#v}"
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Release version: $VERSION"
+
+      - name: Find and update project files
+        run: |
+          # すべての.csprojファイルを検索
+          find . -name "*.csproj" -type f | while read -r PROJECT_FILE; do
+            echo "Updating version in $PROJECT_FILE to $VERSION"
+
+            # VersionPrefixが存在するか確認し、存在すれば更新、なければ追加
+            if grep -q "<VersionPrefix>" "$PROJECT_FILE"; then
+              sed -i "s|<VersionPrefix>.*</VersionPrefix>|<VersionPrefix>$VERSION</VersionPrefix>|g" "$PROJECT_FILE"
+            else
+              # PropertyGroupの後にVersionPrefixを挿入
+              sed -i "/<PropertyGroup>/a \    <VersionPrefix>$VERSION</VersionPrefix>" "$PROJECT_FILE"
+            fi
+
+            # 変更を確認
+            echo "Updated content:"
+            grep -A 1 -B 1 "VersionPrefix" "$PROJECT_FILE" || echo "VersionPrefix not found after update"
+          done
+
+      - name: Configure Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract Docker image information
+        id: docker_info
+        run: |
+          # リポジトリ名を取得（スラッシュやドットをハイフンに置き換え）
+          REPO_NAME=$(echo ${{ github.repository }} | sed 's/.*\///' | tr '.' '-' | tr '[:upper:]' '[:lower:]')
+          DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/$REPO_NAME"
+          echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
+          echo "Docker image name: $DOCKER_IMAGE"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./OngekiMuseumApi/OngekiMuseumApi
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Create summary
+        run: |
+          echo "## Build and Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Docker Image:** ${{ env.DOCKER_IMAGE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tags:** latest, ${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Updated Project Files:" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.csproj" -type f | while read -r PROJECT_FILE; do
+            echo "- \`$PROJECT_FILE\`" >> $GITHUB_STEP_SUMMARY
+          done
