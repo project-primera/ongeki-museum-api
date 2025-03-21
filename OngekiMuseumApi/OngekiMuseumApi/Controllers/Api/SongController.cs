@@ -33,8 +33,6 @@ public class SongController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        _logger.LogInformationWithSlack("楽曲データの全件取得APIが呼び出されました");
-
         try
         {
             var songs = await _context.Songs.ToListAsync();
