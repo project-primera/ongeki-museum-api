@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using OngekiMuseumApi.BackgroundServices;
 using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Facades.Normalization;
@@ -11,10 +12,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 // Entity Framework Core の設定
+var mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder
+{
+    Server = builder.Configuration["Database:Server"],
+    Port = Convert.ToUInt32(builder.Configuration["Database:Port"]),
+    Database = builder.Configuration["Database:Database"],
+    UserID = builder.Configuration["Database:UserID"],
+    Password = builder.Configuration["Database:Password"]
+};
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
+        mySqlConnectionStringBuilder.ConnectionString,
+        ServerVersion.AutoDetect(mySqlConnectionStringBuilder.ConnectionString),
         mySqlOptions => mySqlOptions.EnableRetryOnFailure()
     )
 );
