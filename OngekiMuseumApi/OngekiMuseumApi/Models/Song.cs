@@ -47,6 +47,13 @@ public class Song : ITimestamp
     public string? Copyright { get; set; }
 
     /// <summary>
+    /// 削除フラグ
+    /// OfficialMusicのIsDeletedを参照して決定される
+    /// 公式サイトから削除された楽曲の場合はtrue
+    /// </summary>
+    public bool IsDeleted { get; set; }
+
+    /// <summary>
     /// 楽曲追加日時（JSTでその日の7時）
     /// </summary>
     public DateTimeOffset AddedAt { get; set; }
