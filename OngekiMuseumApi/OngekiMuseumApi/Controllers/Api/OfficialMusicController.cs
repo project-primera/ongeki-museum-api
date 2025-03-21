@@ -27,13 +27,13 @@ public class OfficialMusicController : ControllerBase
     }
 
     /// <summary>
-    /// すべての公式楽曲データを取得
+    /// 削除されていない公式楽曲データを取得
     /// </summary>
-    /// <returns>公式楽曲データのリスト</returns>
+    /// <returns>削除されていない公式楽曲データのリスト</returns>
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        _logger.LogInformationWithSlack("公式楽曲データの全件取得APIが呼び出されました");
+        _logger.LogInformationWithSlack("公式楽曲データの取得APIが呼び出されました（削除楽曲を除く）");
 
         try
         {
@@ -41,31 +41,7 @@ public class OfficialMusicController : ControllerBase
                 .Where(m => !m.IsDeleted)
                 .ToListAsync();
 
-            // 匿名オブジェクトを作成してIdを除外し、nullの場合は空文字列に変換
-            var result = officialMusics.Select(music => new
-            {
-                New = music.New ?? "",
-                Date = music.Date ?? "",
-                Title = music.Title ?? "",
-                TitleSort = music.TitleSort ?? "",
-                Artist = music.Artist ?? "",
-                IdString = music.IdString ?? "",
-                ChapId = music.ChapId ?? "",
-                Chapter = music.Chapter ?? "",
-                Character = music.Character ?? "",
-                CharaId = music.CharaId ?? "",
-                Category = music.Category ?? "",
-                CategoryId = music.CategoryId ?? "",
-                Lunatic = music.Lunatic ?? "",
-                Bonus = music.Bonus ?? "",
-                Copyright1 = music.Copyright1 ?? "",
-                LevBas = music.LevBas ?? "",
-                LevAdv = music.LevAdv ?? "",
-                LevExc = music.LevExc ?? "",
-                LevMas = music.LevMas ?? "",
-                LevLnt = music.LevLnt ?? "",
-                ImageUrl = music.ImageUrl ?? ""
-            }).OrderByDescending(music => music.Date).ToList();
+            var result = CreateMusicResponseList(officialMusics);
 
             return Ok(result);
         }
@@ -74,5 +50,63 @@ public class OfficialMusicController : ControllerBase
             _logger.LogErrorWithSlack($"公式楽曲データの取得中にエラーが発生しました: {ex.Message}");
             return StatusCode(500, "内部サーバーエラーが発生しました");
         }
+    }
+
+    /// <summary>
+    /// すべての公式楽曲データを取得（削除楽曲を含む）
+    /// </summary>
+    /// <returns>すべての公式楽曲データのリスト</returns>
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll()
+    {
+        _logger.LogInformationWithSlack("公式楽曲データの全件取得APIが呼び出されました（削除楽曲を含む）");
+
+        try
+        {
+            var officialMusics = await _context.OfficialMusics
+                .ToListAsync();
+
+            var result = CreateMusicResponseList(officialMusics);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogErrorWithSlack($"公式楽曲データの取得中にエラーが発生しました: {ex.Message}");
+            return StatusCode(500, "内部サーバーエラーが発生しました");
+        }
+    }
+
+    /// <summary>
+    /// 楽曲データのレスポンスリストを作成
+    /// </summary>
+    /// <param name="officialMusics">楽曲データのリスト</param>
+    /// <returns>レスポンス用の楽曲データリスト</returns>
+    private static List<object> CreateMusicResponseList(IEnumerable<Models.OfficialMusic> officialMusics)
+    {
+        return officialMusics.Select(music => new
+        {
+            New = music.New ?? "",
+            Date = music.Date ?? "",
+            Title = music.Title ?? "",
+            TitleSort = music.TitleSort ?? "",
+            Artist = music.Artist ?? "",
+            IdString = music.IdString ?? "",
+            ChapId = music.ChapId ?? "",
+            Chapter = music.Chapter ?? "",
+            Character = music.Character ?? "",
+            CharaId = music.CharaId ?? "",
+            Category = music.Category ?? "",
+            CategoryId = music.CategoryId ?? "",
+            Lunatic = music.Lunatic ?? "",
+            Bonus = music.Bonus ?? "",
+            Copyright1 = music.Copyright1 ?? "",
+            LevBas = music.LevBas ?? "",
+            LevAdv = music.LevAdv ?? "",
+            LevExc = music.LevExc ?? "",
+            LevMas = music.LevMas ?? "",
+            LevLnt = music.LevLnt ?? "",
+            ImageUrl = music.ImageUrl ?? ""
+        }).OrderByDescending(music => music.Date).ToList<object>();
     }
 }

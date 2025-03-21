@@ -53,6 +53,15 @@ public class TopController : ControllerBase
                                   color: #0099cc;
                                   margin-top: 30px;
                               }
+                              h3 {
+                                  color: #0099cc;
+                                  margin-top: 10px;
+                                  margin-bottom: 5px;
+                                  margin-left: .5em;
+                              }
+                              p {
+                                  margin-left: 1em;
+                              }
                               a {
                                   color: #0066cc;
                                   text-decoration: none;
@@ -77,29 +86,47 @@ public class TopController : ControllerBase
                           </p>
 
                           <h2>API一覧</h2>
+
+                          <p>
+                            uuidは当サイトが独自に割り振ったIDです。<br>
+                            毎日午前7時30分頃に更新されます。
+                        </p>
+
+                          <h3>公式楽曲データ</h3>
+                          <p>公式の楽曲データをそのまま返します。</p>
                           <p>
                               <a href="/api/official-music">/api/official-music</a><br>
-                              公式の楽曲データをそのまま返します。削除された楽曲などの情報も含みます。
+                              削除されていない楽曲のみを返します。
+
                           </p>
+                          <p>
+                              <a href="/api/official-music/all">/api/official-music/all</a><br>
+                              削除された楽曲などの情報も含みます。
+                          </p>
+                          <h3>チャプター情報</h3>
                           <p>
                               <a href="/api/chapter">/api/chapter</a><br>
-                              チャプター情報を返します。
+                              現在開催されていないチャプターを含みます。
                           </p>
+                          <h3>カテゴリ情報</h3>
                           <p>
-                              <a href="/api/category">/api/category</a><br>
-                              カテゴリ情報を返します。
+                              <a href="/api/category">/api/category</a>
                           </p>
+                          <h3>楽曲データ</h3>
                           <p>
                               <a href="/api/song">/api/song</a><br>
-                              楽曲データを返します。削除された楽曲を含みます。
+                              削除された楽曲を含みます。
                           </p>
+                          <h3>譜面データ</h3>
                           <p>
                               <a href="/api/chart">/api/chart</a><br>
-                              譜面データを返します。削除された譜面を含みます。
+                              削除された譜面を含みます。<br>
+                              Lv13の場合は130、Lv13+の場合は135と表されます。
                           </p>
+                          <h3>譜面データ + 楽曲情報</h3>
                           <p>
                               <a href="/api/chart/join">/api/chart/join</a><br>
-                              譜面データと楽曲データを結合して返します。削除された楽曲・譜面を含みます。
+                              削除された楽曲を含みます。
                           </p>
 
                           <h2>このサイトのリポジトリ</h2>

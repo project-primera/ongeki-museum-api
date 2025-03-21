@@ -48,6 +48,7 @@ public class SongController : ControllerBase
                 Artist = song.Artist,
                 Copyright = song.Copyright ?? "",
                 song.AddedAt,
+                song.IsDeleted
             }).OrderByDescending(song => song.AddedAt).ToList();
 
             return Ok(result);
