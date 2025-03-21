@@ -87,6 +87,7 @@ public class ChartController : ControllerBase
                         song.Artist,
                         Copyright = song.Copyright ?? "",
                         song.AddedAt,
+                        song.IsDeleted
                     })
                 .OrderByDescending(data => data.AddedAt)
                 .ThenBy(data => data.ChartUuid)

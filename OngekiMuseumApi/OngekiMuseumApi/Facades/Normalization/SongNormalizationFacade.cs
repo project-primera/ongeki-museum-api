@@ -63,6 +63,7 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                     Title = officialMusic.Title ?? string.Empty,
                     Artist = officialMusic.Artist ?? string.Empty,
                     Copyright = officialMusic.Copyright1,
+                    IsDeleted = officialMusic.IsDeleted,
                     AddedAt = GetAddedAtFromDateString(officialMusic.Date),
                 };
 
@@ -95,6 +96,13 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                 if (existingSong.AddedAt != newAddedAt)
                 {
                     existingSong.AddedAt = newAddedAt;
+                    needsUpdate = true;
+                }
+
+                // IsDeletedの確認
+                if (existingSong.IsDeleted != officialMusic.IsDeleted)
+                {
+                    existingSong.IsDeleted = officialMusic.IsDeleted;
                     needsUpdate = true;
                 }
 

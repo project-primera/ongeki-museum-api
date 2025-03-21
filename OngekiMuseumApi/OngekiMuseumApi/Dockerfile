@@ -7,6 +7,8 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ENV TZ=Asia/Tokyo
+RUN ln -snf /usr/share/zoneinfo/"$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
 
 # このステージは、サービス プロジェクトのビルドに使用されます
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
@@ -16,12 +18,12 @@ COPY ["OngekiMuseumApi/OngekiMuseumApi.csproj", "OngekiMuseumApi/"]
 RUN dotnet restore "./OngekiMuseumApi/OngekiMuseumApi.csproj"
 COPY . .
 WORKDIR "/src/OngekiMuseumApi"
-RUN dotnet build "./OngekiMuseumApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./OngekiMuseumApi.csproj" -c "$BUILD_CONFIGURATION" -o /app/build
 
 # このステージは、最終ステージにコピーするサービス プロジェクトを公開するために使用されます
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./OngekiMuseumApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./OngekiMuseumApi.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false
 
 # このステージは、運用環境または VS から通常モードで実行している場合に使用されます (デバッグ構成を使用しない場合の既定)
 FROM base AS final
