@@ -53,6 +53,13 @@ public class TopController : ControllerBase
                                   color: #0099cc;
                                   margin-top: 30px;
                               }
+                              h3 {
+                                  color: #0099cc;
+                                  margin-left: .5em;
+                              }
+                              p {
+                                  margin-left: 1em;
+                              }
                               a {
                                   color: #0066cc;
                                   text-decoration: none;
@@ -77,10 +84,17 @@ public class TopController : ControllerBase
                           </p>
 
                           <h2>API一覧</h2>
+
+                          <h3>公式楽曲データ</h3>
+                          <p>公式の楽曲データをそのまま返します。</p>
                           <p>
                               <a href="/api/official-music">/api/official-music</a><br>
-                              公式の楽曲データをそのまま返します。削除された楽曲などの情報も含みます。
+                              削除されていない楽曲のみを返します。
+
                           </p>
+                          <p>
+                              <a href="/api/official-music/all">/api/official-music/all</a><br>
+                              削除された楽曲などの情報も含みます。
                           <p>
                               <a href="/api/chapter">/api/chapter</a><br>
                               チャプター情報を返します。
