@@ -33,8 +33,6 @@ public class ChartController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        _logger.LogInformationWithSlack("譜面データの全件取得APIが呼び出されました");
-
         try
         {
             var charts = await _context.Charts.ToListAsync();
@@ -67,8 +65,6 @@ public class ChartController : ControllerBase
     [HttpGet("join")]
     public async Task<IActionResult> GetJoin()
     {
-        _logger.LogInformationWithSlack("譜面データと楽曲データの結合取得APIが呼び出されました");
-
         try
         {
             var joinedData = await _context.Charts
