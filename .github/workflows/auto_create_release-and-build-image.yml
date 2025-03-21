@@ -7,7 +7,7 @@ on:
       - main  # mainブランチへのPRがマージされた時に実行
 
 jobs:
-  create-release:
+  prepare-release:
     # PRがマージされた場合のみ実行
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Release:')
     runs-on: ubuntu-latest
@@ -56,38 +56,18 @@ jobs:
           # 必要に応じてリリースノートをフォーマット
           # PRの本文がそのままリリースノートとして適さない場合、ここで加工
 
-      - name: Create tag
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@github.com"
-
-          # タグが既に存在するか確認
-          if git rev-parse "$VERSION" >/dev/null 2>&1; then
-            echo "Tag $VERSION already exists. Skipping tag creation."
-          else
-            echo "Creating tag $VERSION"
-            git tag $VERSION
-            git push origin $VERSION
-          fi
-
-      - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # リリースが既に存在するか確認
-          EXISTING_RELEASE=$(gh release view $VERSION 2>/dev/null || echo "")
-
-          if [ -n "$EXISTING_RELEASE" ]; then
-            echo "Release $VERSION already exists. Updating release."
-            gh release edit $VERSION --notes-file release_notes.md
-          else
-            echo "Creating new release $VERSION"
-            gh release create $VERSION --title "Release $VERSION" --notes-file release_notes.md
-          fi
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release_notes.md
+          retention-days: 1
 
   update-version-and-build:
-    needs: create-release  # create-releaseジョブが完了してから実行
+    needs: prepare-release
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}  # バージョン情報を出力
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -102,16 +82,10 @@ jobs:
       - name: Get release version
         id: get_version
         run: |
-          # create-releaseジョブで設定されたバージョン情報を使用
-          if [ -n "${{ needs.create-release.outputs.version }}" ]; then
-            VERSION="${{ needs.create-release.outputs.version }}"
-          else
-            # 最新のタグを取得
-            VERSION=$(git describe --tags --abbrev=0)
+          # prepare-releaseジョブで設定されたバージョン情報を使用
+          if [ -n "${{ needs.prepare-release.outputs.version }}" ]; then
+            VERSION="${{ needs.prepare-release.outputs.version }}"
           fi
-
-          # vから始まる場合、先頭のvを削除
-          VERSION="${VERSION#v}"
 
           # 環境変数に設定
           echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -184,8 +158,66 @@ jobs:
             echo "- \`$PROJECT_FILE\`" >> $GITHUB_STEP_SUMMARY
           done
 
+  create-release:
+    needs: [prepare-release, update-version-and-build]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}  # ステップの出力を参照
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得
+
+      - name: Get version from previous job
+        id: get_version
+        run: |
+          # update-version-and-buildジョブで設定されたバージョン情報を使用
+          VERSION="v${{ needs.update-version-and-build.outputs.version }}"
+
+          # 環境変数に設定
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # ステップの出力として設定
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Download release notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+          path: .
+
+      - name: Create tag
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+          # タグが既に存在するか確認
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists. Skipping tag creation."
+          else
+            echo "Creating tag $VERSION"
+            git tag $VERSION
+            git push origin $VERSION
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # リリースが既に存在するか確認
+          EXISTING_RELEASE=$(gh release view $VERSION 2>/dev/null || echo "")
+
+          if [ -n "$EXISTING_RELEASE" ]; then
+            echo "Release $VERSION already exists. Updating release."
+            gh release edit $VERSION --notes-file release_notes.md
+          else
+            echo "Creating new release $VERSION"
+            gh release create $VERSION --title "Release $VERSION" --notes-file release_notes.md
+          fi
+
   merge-main-to-develop:
-    needs: [create-release, update-version-and-build]
+    needs: [prepare-release, update-version-and-build, create-release]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -211,7 +243,7 @@ jobs:
             git checkout develop
 
             # mainブランチの変更をdevelopにマージ
-            git merge --no-ff main -m "Merge main into develop after release ${{ needs.create-release.outputs.version }}"
+            git merge --no-ff main -m "Merge main into develop after release ${{ needs.prepare-release.outputs.version }}"
 
             # developブランチをプッシュ
             git push origin develop
@@ -227,4 +259,4 @@ jobs:
           echo "## Main to Develop Merge" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Status:** Completed" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version:** ${{ needs.create-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ needs.prepare-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
