@@ -120,7 +120,8 @@ public class TopController : ControllerBase
                           <h3>譜面データ</h3>
                           <p>
                               <a href="/api/chart">/api/chart</a><br>
-                              削除された譜面を含みます。
+                              削除された譜面を含みます。<br>
+                              Lv13の場合は130、Lv13+の場合は135と表されます。
                           </p>
                           <h3>譜面データ + 楽曲情報</h3>
                           <p>
