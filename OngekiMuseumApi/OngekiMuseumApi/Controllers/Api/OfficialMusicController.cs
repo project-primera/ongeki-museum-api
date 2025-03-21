@@ -33,8 +33,6 @@ public class OfficialMusicController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        _logger.LogInformationWithSlack("公式楽曲データの取得APIが呼び出されました（削除楽曲を除く）");
-
         try
         {
             var officialMusics = await _context.OfficialMusics

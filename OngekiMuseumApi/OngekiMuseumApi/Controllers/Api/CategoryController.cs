@@ -33,8 +33,6 @@ public class CategoryController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        _logger.LogInformationWithSlack("カテゴリデータの全件取得APIが呼び出されました");
-
         try
         {
             var categories = await _context.Categories.ToListAsync();

@@ -7,6 +7,7 @@
         <!--suppress HardcodedPasswords -->
         <UserSecretsId>7cf8566a-b603-4c6e-a5c0-bd8045216c5c</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <VersionPrefix>0.0.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
