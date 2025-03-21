@@ -57,7 +57,7 @@ public class OfficialMusic : ITimestamp
     /// 楽曲ID
     /// </summary>
     [MaxLength(6)]
-    public string? IdString { get; init; }
+    public string? IdString { get; set; }
 
     /// <summary>
     /// チャプターID

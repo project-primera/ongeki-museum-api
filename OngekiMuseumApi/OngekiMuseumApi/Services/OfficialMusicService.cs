@@ -213,6 +213,11 @@ public class OfficialMusicService(
                             updateLog += $"\nArtist: {existingMusic.Artist} → {musicJson.artist}";
                             existingMusic.Artist = NullIfEmpty(musicJson.artist);
                         }
+                        if (!string.Equals(existingMusic.IdString, NullIfEmpty(musicJson.id)))
+                        {
+                            updateLog += $"\nIdString: {existingMusic.IdString} → {musicJson.id}";
+                            existingMusic.IdString = NullIfEmpty(musicJson.id);
+                        }
                         if (!string.Equals(existingMusic.ChapId, NullIfEmpty(musicJson.chap_id)))
                         {
                             updateLog += $"\nChapId: {existingMusic.ChapId} → {musicJson.chap_id}";
