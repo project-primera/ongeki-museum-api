@@ -1,6 +1,14 @@
 # ongeki-museum
 
-オンゲキの公式楽曲データを正規化して提供するAPI。  
+[![GitHub License](https://img.shields.io/github/license/project-primera/ongeki-museum-api)
+](https://github.com/project-primera/ongeki-museum-api/blob/develop/LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/project-primera/ongeki-museum-api?logo=github)
+](https://github.com/project-primera/ongeki-museum-api/releases/latest)
+[
+![Docker Image Version](https://img.shields.io/docker/v/projectprimera/ongeki-museum-api?logo=docker&color=blue)](https://hub.docker.com/r/projectprimera/ongeki-museum-api)
+
+
+オンゲキの公式楽曲データを正規化して提供するAPI。
 利用に際して、各権利者様の権利を尊重し、個人利用の範囲内でご利用ください。
 
 ## 動作に必要なもの
