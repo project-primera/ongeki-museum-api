@@ -27,9 +27,6 @@ public class TopController : ControllerBase
     [HttpGet("/")]
     public ContentResult Index()
     {
-        // 通常のログとSlackへのログを同時に送信
-        _logger.LogInformationWithSlack("トップページにアクセスがありました");
-
         string htmlStart = """
                            <!DOCTYPE html>
                            <html lang="ja">
