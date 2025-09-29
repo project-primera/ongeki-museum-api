@@ -124,7 +124,7 @@ public class ChartNormalizationFacade : IChartNormalizationFacade
             // 新規データを追加
             var newChart = new Chart
             {
-                Uuid = Guid.CreateVersion7(),
+                Uuid = OngekiMuseumApi.Utils.Uuid.CreateVersion7(),
                 SongUuid = songUuid,
                 Difficulty = difficulty,
                 Level = levelValue,

@@ -80,7 +80,7 @@ public class ChapterNormalizationFacade : IChapterNormalizationFacade
                     {
                         OfficialId = chapId,
                         Name = chapterInfo.Chapter,
-                        Uuid = Guid.CreateVersion7(),
+                        Uuid = OngekiMuseumApi.Utils.Uuid.CreateVersion7(),
                     };
 
                     await _context.Chapters.AddAsync(newChapter);

@@ -58,7 +58,7 @@ public class SongNormalizationFacade : ISongNormalizationFacade
                 // 新規作成
                 var newSong = new Song
                 {
-                    Uuid = Guid.NewGuid(), // 新しいUUIDを生成
+                    Uuid = OngekiMuseumApi.Utils.Uuid.CreateVersion7(), // UUIDv7 を生成
                     OfficialUuid = officialMusic.Uuid,
                     Title = officialMusic.Title ?? string.Empty,
                     Artist = officialMusic.Artist ?? string.Empty,

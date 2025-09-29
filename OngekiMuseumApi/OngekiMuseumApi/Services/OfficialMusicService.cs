@@ -156,7 +156,7 @@ public class OfficialMusicService(
                     {
                         // 新規データを追加
                         var newMusic = new OfficialMusic {
-                            Uuid = Guid.CreateVersion7(),
+                            Uuid = OngekiMuseumApi.Utils.Uuid.CreateVersion7(),
                             New = NullIfEmpty(musicJson.@new),
                             Date = NullIfEmpty(musicJson.date),
                             Title = NullIfEmpty(musicJson.title),
