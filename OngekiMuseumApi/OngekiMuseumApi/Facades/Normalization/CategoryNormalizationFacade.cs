@@ -79,7 +79,7 @@ public class CategoryNormalizationFacade : ICategoryNormalizationFacade
                     var newCategory = new Category
                     {
                         OfficialId = officialCategoryId,
-                        Uuid = Guid.CreateVersion7(),
+                        Uuid = OngekiMuseumApi.Utils.Uuid.CreateVersion7(),
                         Name = categoryInfo.Category
                     };
 
