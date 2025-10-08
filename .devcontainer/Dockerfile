@@ -26,7 +26,5 @@ RUN groupadd --gid $USER_GID $USERNAME \
 # Add dotnet tools to PATH
 ENV PATH="${PATH}:/root/.dotnet/tools:/home/${USERNAME}/.dotnet/tools"
 
-USER $USERNAME
-
 # Set working directory
 WORKDIR /workspace

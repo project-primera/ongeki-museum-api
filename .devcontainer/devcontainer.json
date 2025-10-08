@@ -29,9 +29,13 @@
       }
     }
   },
-  "postCreateCommand": "dotnet tool install --global dotnet-ef && cd /workspace/OngekiMuseumApi && dotnet restore",
+  "postCreateCommand": "bash /workspace/.devcontainer/setup.sh",
   "remoteUser": "vscode",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "updateRemoteUserUID": true,
+  "containerEnv": {
+    "WORKSPACE_DIR": "/workspace"
   }
 }
