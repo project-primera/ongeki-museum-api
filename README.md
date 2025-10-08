@@ -52,6 +52,20 @@ Dev Container環境では、以下が自動的に構成されます：
 
 ## マイグレーション
 
+### Dev Container環境の場合
+
+Dev Container内のターミナルで以下のコマンドを実行：
+
+```bash
+cd /workspace/OngekiMuseumApi/OngekiMuseumApi
+dotnet ef migrations add <Name>
+dotnet ef database update
+```
+
+データベース接続は環境変数で自動的に設定されています。
+
+### ローカル環境の場合
+
 ### 作成
 
 ```bash
