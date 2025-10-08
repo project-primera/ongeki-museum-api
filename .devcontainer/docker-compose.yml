@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Database__Server=db
+      - Database__Port=3306
+      - Database__Database=ongeki-museum-api
+      - Database__UserID=root
+      - Database__Password=devpassword
+    depends_on:
+      - db
+    networks:
+      - dev-network
+
+  db:
+    image: mariadb:11.3
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: devpassword
+      MARIADB_DATABASE: ongeki-museum-api
+      TZ: Asia/Tokyo
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - dev-network
+    ports:
+      - "3306:3306"
+
+volumes:
+  mariadb-data:
+
+networks:
+  dev-network:

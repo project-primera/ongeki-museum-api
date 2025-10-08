@@ -15,9 +15,37 @@
 
 - C#の開発環境
     - Visual Studio もしくは JetBrains Rider がオススメ
+    - または VS Code + Dev Container (推奨)
 - mariadb
 
 ## 実行
+
+### Dev Container を使う場合 (推奨)
+
+このリポジトリはDev Container環境をサポートしています。以下のいずれかの方法で開発できます：
+
+#### GitHub Codespaces
+1. GitHubリポジトリページで「Code」→「Codespaces」→「Create codespace on develop」をクリック
+2. 自動的にビルドされ、開発環境が整います
+3. データベースも自動的に起動します
+
+#### VS Code + Docker
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)をインストール
+2. VS Codeに「Dev Containers」拡張機能をインストール
+3. リポジトリを開き、コマンドパレット（Ctrl+Shift+P / Cmd+Shift+P）から「Dev Containers: Reopen in Container」を実行
+4. データベースも自動的に起動します
+
+Dev Container環境では、以下が自動的に構成されます：
+- .NET 9.0 SDK
+- Entity Framework Core ツール
+- MariaDB データベース
+- VS Code C# 拡張機能
+
+#### デバッグ実行
+1. VS Codeのデバッグビュー（Ctrl+Shift+D / Cmd+Shift+D）を開く
+2. 「.NET Core Launch (web)」を選択して実行（F5）
+
+### ローカル環境で実行する場合
 
 - `OngekiMuseumApi\OngekiMuseumApi\appsettings.Development.json` にmariadbへの接続設定を書く
 - c#の開発環境で実行
