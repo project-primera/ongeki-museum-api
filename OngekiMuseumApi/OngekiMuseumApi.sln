@@ -5,10 +5,6 @@ VisualStudioVersion = 17.12.35707.178 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi", "OngekiMuseumApi\OngekiMuseumApi.csproj", "{57A049A7-2F84-4604-93E9-EE9BE2D95DFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.AppHost", "OngekiMuseumApi.AppHost\OngekiMuseumApi.AppHost.csproj", "{DE8649E0-E532-45A0-9192-1251920B8AFB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.ServiceDefaults", "OngekiMuseumApi.ServiceDefaults\OngekiMuseumApi.ServiceDefaults.csproj", "{5FC31C08-EC27-49D5-86B8-1F01878DB3D8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OngekiMuseumApi.Tests", "OngekiMuseumApi.Tests\OngekiMuseumApi.Tests.csproj", "{0137B868-77BB-4166-BB4B-10E08C576996}"
 EndProject
 Global
