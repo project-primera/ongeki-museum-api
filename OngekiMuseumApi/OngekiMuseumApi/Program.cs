@@ -8,6 +8,9 @@ using OngekiMuseumApi.Middlewares;
 using OngekiMuseumApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+#if ASPIRE_HOSTED
+    builder.AddServiceDefaults();
+#endif
 
 // Entity Framework Core の設定
 var mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder
