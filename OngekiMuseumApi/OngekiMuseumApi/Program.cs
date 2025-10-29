@@ -5,11 +5,12 @@ using OngekiMuseumApi.Data;
 using OngekiMuseumApi.Facades.Normalization;
 using OngekiMuseumApi.Helpers;
 using OngekiMuseumApi.Middlewares;
-using OngekiMuseumApi.ServiceDefaults;
 using OngekiMuseumApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddServiceDefaults();
+#if ASPIRE_HOSTED
+    builder.AddServiceDefaults();
+#endif
 
 // Entity Framework Core の設定
 var mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder
@@ -20,6 +21,8 @@ var mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder
     UserID = builder.Configuration["Database:UserID"],
     Password = builder.Configuration["Database:Password"]
 };
+
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         mySqlConnectionStringBuilder.ConnectionString,
@@ -59,7 +62,6 @@ var app = builder.Build();
 // ServiceProviderHelperにIServiceProviderを設定
 ServiceProviderStaticHelper.SetServiceProvider(app.Services);
 
-app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
