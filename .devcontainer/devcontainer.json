@@ -1,0 +1,41 @@
+{
+  "name": "Ongeki Museum API",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [5000, 3306],
+  "portsAttributes": {
+    "5000": {
+      "label": "API",
+      "onAutoForward": "notify"
+    },
+    "3306": {
+      "label": "MariaDB",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "visualstudioexptteam.vscodeintellicode",
+        "editorconfig.editorconfig",
+        "streetsidesoftware.code-spell-checker"
+      ],
+      "settings": {
+        "dotnet.defaultSolution": "OngekiMuseumApi/OngekiMuseumApi.sln"
+      }
+    }
+  },
+  "postCreateCommand": "bash /workspace/.devcontainer/setup.sh",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "updateRemoteUserUID": true,
+  "containerEnv": {
+    "WORKSPACE_DIR": "/workspace"
+  }
+}
